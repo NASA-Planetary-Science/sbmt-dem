@@ -57,7 +57,7 @@ public class VtkDemSurface extends GenericPolyhedralModel implements VtkResource
 
 	// Attributes
 	private final ImmutableList<FeatureType> featureTypeL;
-	private final boolean isViewBadData;
+	private final DataMode viewDataMode;
 
 	// State vars
 	private ItemDrawAttr currDA;
@@ -87,7 +87,7 @@ public class VtkDemSurface extends GenericPolyhedralModel implements VtkResource
 		refDem = aDem;
 
 		featureTypeL = ImmutableList.copyOf(aStruct.featureTypeL);
-		isViewBadData = aStruct.isViewBadData;
+		viewDataMode = aStruct.viewDataMode;
 
 		currDA = ItemDrawAttr.Default;
 		prevDA = ItemDrawAttr.Default;
@@ -453,7 +453,7 @@ public class VtkDemSurface extends GenericPolyhedralModel implements VtkResource
 		}
 
 		VtkDemStruct tmpStruct = new VtkDemStruct(aVDS.cGeometricCenterPoint, ImmutableMap.of(), aVDS.featureTypeL,
-				tmpColoringValuesPerCellM, tmpColoringValuesPerPointM, tmpInteriorPD, tmpExteriorPD, aVDS.isViewBadData);
+				tmpColoringValuesPerCellM, tmpColoringValuesPerPointM, tmpInteriorPD, tmpExteriorPD, aVDS.viewDataMode);
 
 		VtkDemSurface retVDS = new VtkDemSurface(aVDS.refDem, tmpStruct);
 		return retVDS;

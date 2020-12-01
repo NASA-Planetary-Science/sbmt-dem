@@ -37,6 +37,7 @@ import edu.jhuapl.saavtk.pick.HookUtil;
 import edu.jhuapl.saavtk.pick.PickListener;
 import edu.jhuapl.saavtk.pick.PickMode;
 import edu.jhuapl.saavtk.pick.PickTarget;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.view.AssocActor;
 import edu.jhuapl.saavtk.vtk.VtkUtil;
@@ -44,6 +45,7 @@ import edu.jhuapl.sbmt.dem.gui.analyze.AnalyzePanel;
 import edu.jhuapl.sbmt.dem.gui.analyze.AnalyzeWindowListener;
 import edu.jhuapl.sbmt.dem.gui.popup.ActionUtil;
 import edu.jhuapl.sbmt.dem.gui.popup.DemGuiUtil;
+import edu.jhuapl.sbmt.dem.vtk.DataMode;
 import edu.jhuapl.sbmt.dem.vtk.ItemDrawAttr;
 import edu.jhuapl.sbmt.dem.vtk.VtkDemPainter;
 import edu.jhuapl.sbmt.dem.vtk.VtkDemSurface;
@@ -393,12 +395,12 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	}
 
 	/**
-	 * Returns whether bad data should be shown.
+	 * Returns the {@link DataMode} associated with the {@link Dem}'s data.
 	 */
-	public boolean getViewBadData(Dem aItem)
+	public DataMode getViewDataMode(Dem aItem)
 	{
 		DemConfigAttr tmpDCA = configM.get(aItem);
-		return tmpDCA.getViewBadData();
+		return tmpDCA.getViewDataMode();
 	}
 
 	/**
@@ -714,14 +716,14 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	}
 
 	/**
-	 * Sets the opacity of the list of items.
+	 * Sets the {@link DataMode} for the list of items.
 	 */
-	public void setViewBadData(Collection<Dem> aItemC, boolean aViewBadData)
+	public void setViewDataMode(Collection<Dem> aItemC, DataMode aViewDataMode)
 	{
 		for (Dem aItem : aItemC)
 		{
 			DemConfigAttr tmpDCA = configM.get(aItem);
-			tmpDCA = tmpDCA.cloneWithViewBadData(aViewBadData);
+			tmpDCA = tmpDCA.cloneWithViewDataMode(aViewDataMode);
 			configM.put(aItem, tmpDCA);
 		}
 
@@ -792,6 +794,10 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	{
 		// Respond only to active events
 		if (aMode != PickMode.ActivePri)
+			return;
+
+		// Bail if popup trigger
+		if (PickUtil.isPopupTrigger(aEvent) == true)
 			return;
 
 		// Bail if no associated painter

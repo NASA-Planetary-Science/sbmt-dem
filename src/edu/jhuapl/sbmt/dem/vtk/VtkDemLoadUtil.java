@@ -25,8 +25,6 @@ import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.model.PolyhedralModel.ColoringValueType;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.vtk.VtkUtil;
-import edu.jhuapl.saavtk2.geom.Geometry;
-import edu.jhuapl.saavtk2.io.ObjGeometryReader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemException;
@@ -74,9 +72,9 @@ public class VtkDemLoadUtil
 	 *
 	 * @param aTask The {@link Task} used to monitor the load process.
 	 * @param aFile The file to be loaded. Supported formats are FITS and OBJ.
-	 * @param aViewBadData If set to true data flagged as invalid will be loaded.
+	 * @param aDataMode The {@link DataMode} for which the data should be loaded.
 	 */
-	private static VtkDemStruct loadFile(Task aTask, File aFile, boolean aViewBadData) throws Exception
+	private static VtkDemStruct loadFile(Task aTask, File aFile, DataMode aDataMode) throws Exception
 	{
 		Exception failExp = null;
 		String fileNameLC = aFile.getName().toLowerCase();
@@ -84,7 +82,7 @@ public class VtkDemLoadUtil
 		// Try loading via the fits load routine
 		try
 		{
-			return loadFitsFile(aTask, aFile, aViewBadData);
+			return loadFitsFile(aTask, aFile, aDataMode);
 		}
 		catch (FitsException | IOException aExp)
 		{
@@ -159,7 +157,7 @@ public class VtkDemLoadUtil
 
 		// Load the VTK state
 		File tmpFile = tmpDem.getSource().getLocalFile();
-		boolean viewBadData = aManager.getViewBadData(tmpDem);
+		DataMode tmpDataMode = aManager.getViewDataMode(tmpDem);
 
 		try
 		{
@@ -168,7 +166,7 @@ public class VtkDemLoadUtil
 				throw new DemException("File does not exist: " + tmpFile);
 
 			// Load the DEM's VTK state
-			VtkDemStruct tmpVDS = VtkDemLoadUtil.loadFile(aTask, tmpFile, viewBadData);
+			VtkDemStruct tmpVDS = VtkDemLoadUtil.loadFile(aTask, tmpFile, tmpDataMode);
 			if (aTask.isAborted() == true)
 				aTask.logRegln("\tThe load has been aborted!");
 			else
@@ -405,9 +403,9 @@ public class VtkDemLoadUtil
 	 *
 	 * @param aTask The corresponding task for progress updates / aborting.
 	 * @param aFile The file to be loaded.
-	 * @param aViewBadData True if invalid data points should be loaded.
+	 * @param aDataMode The {@link DataMode} for which the data should be loaded.
 	 */
-	private static VtkDemStruct loadFitsFile(Task aTask, File aFile, boolean aViewBadData)
+	private static VtkDemStruct loadFitsFile(Task aTask, File aFile, DataMode aDataMode)
 			throws IOException, FitsException
 	{
 		List<vtkObject> abortL = new ArrayList<>();
@@ -501,7 +499,7 @@ public class VtkDemLoadUtil
 				// Check to see if x,y,z values are all valid
 				boolean valid = x != INVALID_VALUE && y != INVALID_VALUE && z != INVALID_VALUE;
 				if (data.length > 6)
-					valid = aViewBadData || (valid && (data[7][m][n] != 0));
+					valid = aDataMode == DataMode.Regular || (valid && (data[7][m][n] != 0));
 
 				// Check to see if data for all backplanes are also valid
 				for (int i = 0; i < numBackPlanes; i++)
@@ -603,6 +601,7 @@ public class VtkDemLoadUtil
 		vtkPolyData normalsFilterOutput = normalsFilter.GetOutput();
 		tmpInteriorPD.DeepCopy(normalsFilterOutput);
 
+		// Form the exterior
 		PolyDataUtil.getBoundary(tmpInteriorPD, tmpExteriorPD);
 		// Remove scalar data since it interferes with setting the boundary color
 		tmpExteriorPD.GetCellData().SetScalars(null);
@@ -629,7 +628,7 @@ public class VtkDemLoadUtil
 		aTask.setProgress(tmpProgress);
 
 		return new VtkDemStruct(centerPos, tmpHS.keyValueM, featureTypeL, vValuesPerCellM, vValuesPerPointM,
-				tmpInteriorPD, tmpExteriorPD, aViewBadData);
+				tmpInteriorPD, tmpExteriorPD, aDataMode);
 	}
 
 	/**
@@ -647,13 +646,20 @@ public class VtkDemLoadUtil
 		aTask.logRegln("\tAbort support is limited.");
 		aTask.logRegln("\tPlease wait...");
 
-		ObjGeometryReader reader = new ObjGeometryReader(aFile.toPath());
-		Geometry geom = reader.get();
-		vtkPolyData vInteriorPD = geom.getPolyData();
+		// Load the file
+		vtkPolyData vInteriorPD;
+		try
+		{
+			vInteriorPD = PolyDataUtil.loadOBJShapeModel(aFile.getPath());
+		}
+		catch (Exception aExp)
+		{
+			throw new IOException("Failed to load obj file: " + aFile, aExp);
+		}
 		if (vInteriorPD == null)
 			throw new IOException("Failed to load obj file: " + aFile);
 
-		// Ensure we have a populated tmpInteriorPD
+		// Ensure we have a populated vInteriorPD
 		if (vInteriorPD.GetPoints().GetNumberOfPoints() == 0)
 			throw new IOException("Failed to load obj file: " + aFile + "\n\tData is empty!");
 
@@ -664,9 +670,14 @@ public class VtkDemLoadUtil
 			return null;
 		}
 
-		vtkPolyData vExteriorPD = new vtkPolyData();
 		Map<String, KeyValueNode> tmpKeyValueM = ImmutableMap.of();
 		Vector3D tmpCenterPos = new Vector3D(vInteriorPD.GetCenter());
+
+		// Form the exterior
+		vtkPolyData vExteriorPD = new vtkPolyData();
+		PolyDataUtil.getBoundary(vInteriorPD, vExteriorPD);
+		// Remove scalar data since it interferes with setting the boundary color
+		vExteriorPD.GetCellData().SetScalars(null);
 
 		// Create the available FeatureTypes.
 		// Currently there is no support for FeatureTypes from OBJ files.
@@ -675,7 +686,7 @@ public class VtkDemLoadUtil
 		List<FeatureType> featureTypeL = new ArrayList<>();
 
 		return new VtkDemStruct(tmpCenterPos, tmpKeyValueM, featureTypeL, vValuesPerCellM, vValuesPerPointM, vInteriorPD,
-				vExteriorPD, false);
+				vExteriorPD, DataMode.Plain);
 	}
 
 	// TODO: Add javadocs

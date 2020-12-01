@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.dem;
 
 import edu.jhuapl.sbmt.dem.gui.analyze.AnalyzePanel;
+import edu.jhuapl.sbmt.dem.vtk.DataMode;
 import edu.jhuapl.sbmt.dem.vtk.ItemDrawAttr;
 
 import glum.gui.info.WindowCfg;
@@ -24,7 +25,8 @@ public class DemConfigAttr
 {
 	// Constants
 	/** The "invalid" {@link DemConfigAttr}. */
-	public static final DemConfigAttr Invalid = new DemConfigAttr(-1, null, ItemDrawAttr.Default, false, true, null);
+	public static final DemConfigAttr Invalid = new DemConfigAttr(-1, null, ItemDrawAttr.Default, false,
+			DataMode.Regular, null);
 
 	// Associated properties
 	/** Defines a "unique" index for the item. */
@@ -35,20 +37,20 @@ public class DemConfigAttr
 	private final ItemDrawAttr drawAttr;
 	/** Defines if the dem's interior should be colorized. */
 	private final boolean isColorizeInterior;
-	/** Defines whether bad data should be displayed. **/
-	private final boolean viewBadData;
+	/** Defines the {@link DataMode} for which the dem will be viewed. **/
+	private final DataMode viewDataMode;
 	/** Defines the window display component settings. */
 	private final WindowCfg analyzeWC;
 
 	/** Standard Constructor */
 	public DemConfigAttr(int aIdx, String aDescription, ItemDrawAttr aDrawAttr, boolean aIsColorizedInterior,
-			boolean aViewBadData, WindowCfg aAnalyzeWC)
+			DataMode aViewDataMode, WindowCfg aAnalyzeWC)
 	{
 		uIdx = aIdx;
 		description = aDescription;
 		drawAttr = aDrawAttr;
 		isColorizeInterior = aIsColorizedInterior;
-		viewBadData = aViewBadData;
+		viewDataMode = aViewDataMode;
 		analyzeWC = aAnalyzeWC;
 	}
 
@@ -59,44 +61,44 @@ public class DemConfigAttr
 		description = null;
 		drawAttr = ItemDrawAttr.Default;
 		isColorizeInterior = false;
-		viewBadData = true;
+		viewDataMode = DataMode.Regular;
 		analyzeWC = null;
 	}
 
 	/** Clone object with the custom description. */
 	public DemConfigAttr cloneWithDescription(String aDescription)
 	{
-		return new DemConfigAttr(uIdx, aDescription, drawAttr, isColorizeInterior, viewBadData, analyzeWC);
+		return new DemConfigAttr(uIdx, aDescription, drawAttr, isColorizeInterior, viewDataMode, analyzeWC);
 	}
 
 	/** Clone object with the custom {@link ItemDrawAttr}. */
 	public DemConfigAttr cloneWithDrawAttr(ItemDrawAttr aDrawAttr)
 	{
-		return new DemConfigAttr(uIdx, description, aDrawAttr, isColorizeInterior, viewBadData, analyzeWC);
+		return new DemConfigAttr(uIdx, description, aDrawAttr, isColorizeInterior, viewDataMode, analyzeWC);
 	}
 
 	/** Clone object with the custom unique index. */
 	public DemConfigAttr cloneWithIdx(int aIdx)
 	{
-		return new DemConfigAttr(aIdx, description, drawAttr, isColorizeInterior, viewBadData, analyzeWC);
+		return new DemConfigAttr(aIdx, description, drawAttr, isColorizeInterior, viewDataMode, analyzeWC);
 	}
 
 	/** Clone object with the custom isColorizeInterior flag. */
 	public DemConfigAttr cloneWithIsColorizeInterior(boolean aIsColorizeInterior)
 	{
-		return new DemConfigAttr(uIdx, description, drawAttr, aIsColorizeInterior, viewBadData, analyzeWC);
+		return new DemConfigAttr(uIdx, description, drawAttr, aIsColorizeInterior, viewDataMode, analyzeWC);
 	}
 
-	/** Clone object with the custom viewBadData mode. */
-	public DemConfigAttr cloneWithViewBadData(boolean aViewBadData)
+	/** Clone object with the custom view {@link DataMode}. */
+	public DemConfigAttr cloneWithViewDataMode(DataMode aViewDataMode)
 	{
-		return new DemConfigAttr(uIdx, description, drawAttr, isColorizeInterior, aViewBadData, analyzeWC);
+		return new DemConfigAttr(uIdx, description, drawAttr, isColorizeInterior, aViewDataMode, analyzeWC);
 	}
 
 	/** Clone object with the custom {@link WindowCfg}. */
 	public DemConfigAttr cloneWithWindowCfg(WindowCfg aWindowCfg)
 	{
-		return new DemConfigAttr(uIdx, description, drawAttr, isColorizeInterior, viewBadData, aWindowCfg);
+		return new DemConfigAttr(uIdx, description, drawAttr, isColorizeInterior, viewDataMode, aWindowCfg);
 	}
 
 	public int getIdx()
@@ -119,9 +121,9 @@ public class DemConfigAttr
 		return isColorizeInterior;
 	}
 
-	public boolean getViewBadData()
+	public DataMode getViewDataMode()
 	{
-		return viewBadData;
+		return viewDataMode;
 	}
 
 	public WindowCfg getWindowCfg()

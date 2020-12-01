@@ -46,7 +46,6 @@ import glum.gui.GuiUtil;
 import glum.gui.action.PopupMenu;
 import glum.gui.misc.BooleanCellEditor;
 import glum.gui.misc.BooleanCellRenderer;
-import glum.gui.panel.generic.PromptPanel;
 import glum.gui.panel.itemList.ItemHandler;
 import glum.gui.panel.itemList.ItemListPanel;
 import glum.gui.panel.itemList.ItemProcessor;
@@ -65,6 +64,7 @@ import net.miginfocom.swing.MigLayout;
  * <li>Adding, editing, or deletion of profiles
  * <li>Changing visibility of profiles
  * </ul>
+ *
  * @author lopeznr1
  */
 public class ProfileTablePanel extends JPanel
@@ -184,7 +184,7 @@ public class ProfileTablePanel extends JPanel
 		if (source == itemAddB)
 			doActionItemAdd();
 		else if (source == itemDelB)
-			doActionItemDelete();
+			doActionItemDel();
 		else if (source == itemEditTB)
 			doActionItemEdit();
 		else if (source == selectAllB)
@@ -281,16 +281,12 @@ public class ProfileTablePanel extends JPanel
 	/**
 	 * Helper method to process the item delete action.
 	 */
-	private void doActionItemDelete()
+	private void doActionItemDel()
 	{
 		Set<PolyLine> pickS = refItemManager.getSelectedItems();
-		String infoMsg = "Are you sure you want to delete " + pickS.size() + " profiles?\n";
 
-		PromptPanel tmpPanel = new PromptPanel(this, "Confirm Deletion", 400, 160);
-		tmpPanel.setInfo(infoMsg);
-		tmpPanel.setSize(400, 150);
-		tmpPanel.setVisibleAsModal();
-		if (tmpPanel.isAccepted() == false)
+		// Prompt the user for confirmation
+		if (ProfileGuiUtil.promptDeletionConfirmation(this, refItemManager, pickS) == false)
 			return;
 
 		// Update internal state vars
@@ -298,6 +294,7 @@ public class ProfileTablePanel extends JPanel
 
 		// Remove the list items
 		refItemManager.removeItems(pickS);
+		refItemManager.setSelectedItems(ImmutableList.of());
 
 		updateGui();
 	}

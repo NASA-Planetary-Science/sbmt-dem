@@ -26,6 +26,7 @@ import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemCatalog;
 import edu.jhuapl.sbmt.dem.DemConfigAttr;
 import edu.jhuapl.sbmt.dem.DemStruct;
+import edu.jhuapl.sbmt.dem.vtk.DataMode;
 import edu.jhuapl.sbmt.dem.vtk.ItemDrawAttr;
 
 import glum.gui.info.WindowCfg;
@@ -307,8 +308,11 @@ public class DemCatalogUtil
 				boolean isItemVisible = tmpIDA.getIsIntShown();
 				boolean isBndrVisible = tmpIDA.getIsExtShown();
 				double opacity = tmpIDA.getOpacity();
-				boolean viewBadData = tmpProp.getViewBadData();
-				tmpBW.write("rndr," + isItemVisible + "," + isBndrVisible + "," + opacity + "," + viewBadData + "\n");
+				String viewDataModeStr = "";
+				DataMode viewDataMode = tmpProp.getViewDataMode();
+				if (viewDataMode != null && viewDataMode != DataMode.Plain)
+					viewDataModeStr = "," + viewDataMode.getDescrBrief().toLowerCase().substring(0, 3);
+				tmpBW.write("rndr," + isItemVisible + "," + isBndrVisible + "," + opacity + viewDataModeStr + "\n");
 
 				WindowCfg tmpWindowCfg = tmpProp.getWindowCfg();
 				if (tmpWindowCfg != null)
@@ -545,7 +549,7 @@ public class DemCatalogUtil
 		boolean intIsShown = false;
 		double opacity = 1.0;
 		double radialOffset = 0.0;
-		boolean viewBadData = false;
+		DataMode viewDataMode = DataMode.Valid;
 		WindowCfg analyzeWC = null;
 
 		// Synthesize the map of Dem.soure.path to Dem
@@ -610,7 +614,7 @@ public class DemCatalogUtil
 					{
 						boolean isColorizedInterior = false;
 						ItemDrawAttr tmpIDA = new ItemDrawAttr(extCP, extIsShown, intCP, intIsShown, opacity, radialOffset);
-						DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isColorizedInterior, viewBadData,
+						DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isColorizedInterior, viewDataMode,
 								analyzeWC);
 
 						storeConfig(aTask, lineCnt, basePath, targPath, pathToDemM1, pathToDemM2, retConfigM, tmpDCA);
@@ -627,7 +631,7 @@ public class DemCatalogUtil
 					intIsShown = false;
 					opacity = 1.0;
 					radialOffset = 0.0;
-					viewBadData = false;
+					viewDataMode = DataMode.Valid;
 					analyzeWC = null;
 
 					continue;
@@ -648,12 +652,20 @@ public class DemCatalogUtil
 				}
 
 				// Read the render props associated with the Dem
-				if (tagStr.equals("rndr") == true && strArr.length >= 5)
+				if (tagStr.equals("rndr") == true && strArr.length >= 4)
 				{
 					intIsShown = ParseUtil.readBoolean(strArr[1], false);
 					extIsShown = ParseUtil.readBoolean(strArr[2], false);
 					opacity = ParseUtil.readDouble(strArr[3], 1.0);
-					viewBadData = ParseUtil.readBoolean(strArr[4], false);
+
+					if (strArr.length >= 5)
+					{
+						String viewModeStr = strArr[4].toLowerCase();
+						if (viewModeStr.equals("reg") == true || viewModeStr.equals("true") == true)
+							viewDataMode = DataMode.Regular;
+						else if (viewModeStr.equals("val") == true || viewModeStr.equals("false") == true)
+							viewDataMode = DataMode.Valid;
+					}
 					continue;
 				}
 
@@ -683,7 +695,7 @@ public class DemCatalogUtil
 			{
 				boolean isColorizedInterior = false;
 				ItemDrawAttr tmpIDA = new ItemDrawAttr(extCP, extIsShown, intCP, intIsShown, opacity, radialOffset);
-				DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isColorizedInterior, viewBadData,
+				DemConfigAttr tmpDCA = new DemConfigAttr(-1, description, tmpIDA, isColorizedInterior, viewDataMode,
 						analyzeWC);
 
 				storeConfig(aTask, lineCnt, basePath, targPath, pathToDemM1, pathToDemM2, retConfigM, tmpDCA);
@@ -811,11 +823,13 @@ public class DemCatalogUtil
 		writeLine(aBW, aIsPainter, "#      aOffset:   A value to translate the dem along it's normal. Values");
 		writeLine(aBW, aIsPainter, "#                 should be integral and in the range: [-100, 100]");
 		writeLine(aBW, aIsPainter, "#");
-		writeLine(aBW, aIsPainter, "#   rndr,<aShowItem>,<aShowBndr>,<aOpacity>,<aViewBadData>");
+		writeLine(aBW, aIsPainter, "#   rndr,<aShowItem>,<aShowBndr>,<aOpacity>,<aViewDataMode>");
 		writeLine(aBW, aIsPainter, "#      aShowItem: Boolean that defines if the DEM should be shown.");
 		writeLine(aBW, aIsPainter, "#      aShowBndr: Boolean that defines if the DEM's boundary should be shown.");
 		writeLine(aBW, aIsPainter, "#      aOpacity:  Value that defines the opacity of the DEM. Range: [0.0 - 1.0]");
-		writeLine(aBW, aIsPainter, "#      aViewBadData: Boolean that defines if bad data should be shown.");
+		writeLine(aBW, aIsPainter, "#      aViewDataMode: Value that defines the view mode of the DEM. Options are:");
+		writeLine(aBW, aIsPainter, "#                     reg: View valid and invalid data.");
+		writeLine(aBW, aIsPainter, "#                     val: View only valid data.");
 		writeLine(aBW, aIsPainter, "#");
 		writeLine(aBW, alwaysTrue, "#");
 		aBW.write("ver," + RefVersion + "\n\n");

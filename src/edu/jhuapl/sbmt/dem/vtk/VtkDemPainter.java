@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.dem.vtk;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class VtkDemPainter implements TaskListener, VtkResource
 
 	// Cache vars
 	private ItemDrawAttr cDemDA;
-	private boolean cViewBadData;
+	private DataMode cViewDataMode;
 
 	// State vars
 	private NotifyTask workTask;
@@ -53,8 +54,7 @@ public class VtkDemPainter implements TaskListener, VtkResource
 	private SourceState workSS;
 
 	// VTK vars
-	private VtkDemSurface vDemSurfaceBad;
-	private VtkDemSurface vDemSurfaceReg;
+	private Map<DataMode, VtkDemSurface> vDemSurfaceM;
 
 	/**
 	 * Standard Constructor
@@ -68,14 +68,13 @@ public class VtkDemPainter implements TaskListener, VtkResource
 		refItem = aItem;
 
 		cDemDA = ItemDrawAttr.Default;
-		cViewBadData = true;
+		cViewDataMode = DataMode.Regular;
 
 		workTask = new NotifyTask(Task.Invalid, this);
 		workExp = null;
 		workSS = null;
 
-		vDemSurfaceBad = null;
-		vDemSurfaceReg = null;
+		vDemSurfaceM = new HashMap<>();
 	}
 
 	/**
@@ -108,10 +107,9 @@ public class VtkDemPainter implements TaskListener, VtkResource
 	public List<vtkProp> getProps()
 	{
 		// Delegate
-		if (cViewBadData == true && vDemSurfaceBad != null)
-			return vDemSurfaceBad.getProps();
-		else if (cViewBadData == false && vDemSurfaceReg != null)
-			return vDemSurfaceReg.getProps();
+		VtkDemSurface tmpSurface = vDemSurfaceM.get(cViewDataMode);
+		if (tmpSurface != null)
+			return tmpSurface.getProps();
 
 		return ImmutableList.of();
 	}
@@ -138,10 +136,7 @@ public class VtkDemPainter implements TaskListener, VtkResource
 	 */
 	public VtkDemSurface getVtkDemSurface()
 	{
-		if (cViewBadData == true)
-			return vDemSurfaceBad;
-		else
-			return vDemSurfaceReg;
+		return vDemSurfaceM.get(cViewDataMode);
 	}
 
 	/**
@@ -175,9 +170,8 @@ public class VtkDemPainter implements TaskListener, VtkResource
 	public boolean isReady()
 	{
 		boolean retBool = false;
-		if (cViewBadData == true && vDemSurfaceBad != null)
-			retBool = true;
-		if (cViewBadData == false && vDemSurfaceReg != null)
+		VtkDemSurface tmpSurface = vDemSurfaceM.get(cViewDataMode);
+		if (tmpSurface != null)
 			retBool = true;
 
 		return retBool;
@@ -196,13 +190,14 @@ public class VtkDemPainter implements TaskListener, VtkResource
 
 		// Switch off flags that will cause a load (if no available VtkDemSurface)
 		ImmutableList<Dem> tmpL = ImmutableList.of(refItem);
-		if (vDemSurfaceBad == null && vDemSurfaceReg == null)
+		if (vDemSurfaceM.size() == 0)
 			refManager.clearAutoLoadFlags(tmpL);
 		// Switch to the available VtkDemSurface
-		else if (cViewBadData == false && vDemSurfaceBad != null)
-			refManager.setViewBadData(tmpL, true);
-		else if (cViewBadData == true && vDemSurfaceReg != null)
-			refManager.setViewBadData(tmpL, false);
+		else
+		{
+			DataMode tmpDataMode = vDemSurfaceM.keySet().iterator().next();
+			refManager.setViewDataMode(tmpL, tmpDataMode);
+		}
 
 		// Abort the load
 		workTask.abort();
@@ -221,9 +216,8 @@ public class VtkDemPainter implements TaskListener, VtkResource
 			return;
 
 		// Bail if we have been loaded
-		if (cViewBadData == true && vDemSurfaceBad != null)
-			return;
-		if (cViewBadData == false && vDemSurfaceReg != null)
+		VtkDemSurface tmpSurface = vDemSurfaceM.get(cViewDataMode);
+		if (tmpSurface != null)
 			return;
 
 		// Start a new load
@@ -241,14 +235,11 @@ public class VtkDemPainter implements TaskListener, VtkResource
 	public void vtkDispose()
 	{
 		// Delegate
-		if (vDemSurfaceBad != null)
-			vDemSurfaceBad.vtkDispose();
-		if (vDemSurfaceReg != null)
-			vDemSurfaceReg.vtkDispose();
+		for (VtkDemSurface aSurface : vDemSurfaceM.values())
+			aSurface.vtkDispose();
 
 		cDemDA = ItemDrawAttr.Default;
-		vDemSurfaceBad = null;
-		vDemSurfaceReg = null;
+		vDemSurfaceM.clear();
 	}
 
 	@Override
@@ -258,9 +249,9 @@ public class VtkDemPainter implements TaskListener, VtkResource
 		boolean isChanged = false;
 
 		// Ensure our cache vars reflect the latest configuration
-		boolean oViewBadData = cViewBadData;
-		cViewBadData = refManager.getViewBadData(refItem);
-		isChanged |= cViewBadData != oViewBadData;
+		DataMode oViewDataMode = cViewDataMode;
+		cViewDataMode = refManager.getViewDataMode(refItem);
+		isChanged |= cViewDataMode != oViewDataMode;
 
 		ItemDrawAttr oDemDA = cDemDA;
 		cDemDA = refManager.getDrawAttr(refItem);
@@ -275,10 +266,9 @@ public class VtkDemPainter implements TaskListener, VtkResource
 			return;
 
 		// Update relevant VTK state
-		if (cViewBadData == true && vDemSurfaceBad != null)
-			vDemSurfaceBad.setDrawAttr(cDemDA);
-		else if (cViewBadData == false && vDemSurfaceReg != null)
-			vDemSurfaceReg.setDrawAttr(cDemDA);
+		VtkDemSurface tmpSurface = vDemSurfaceM.get(cViewDataMode);
+		if (tmpSurface != null)
+			tmpSurface.setDrawAttr(cDemDA);
 	}
 
 	/**
@@ -300,17 +290,14 @@ public class VtkDemPainter implements TaskListener, VtkResource
 		refManager.setKeyValuePairMap(refItem, tmpKeyValueM);
 
 		// Set up the dem surface
-		if (aVDS.isViewBadData == true)
-		{
-			vDemSurfaceBad = new VtkDemSurface(refItem, aVDS);
-			vDemSurfaceBad.setDrawAttr(cDemDA);
-		}
-		else
-		{
-			vDemSurfaceReg = new VtkDemSurface(refItem, aVDS);
-			vDemSurfaceReg.setDrawAttr(cDemDA);
-		}
+		VtkDemSurface tmpSurface = new VtkDemSurface(refItem, aVDS);
+		tmpSurface.setDrawAttr(cDemDA);
+		vDemSurfaceM.put(aVDS.viewDataMode, tmpSurface);
 		workTask.setProgress(1.0);
+
+		// Switch to DataMode.Plain if that is what we are populated with
+		if (aVDS.viewDataMode == DataMode.Plain)
+			refManager.setViewDataMode(ImmutableList.of(refItem), DataMode.Plain);
 
 		refManager.notifyLoadUpdate(refItem, true);
 	}
@@ -343,10 +330,9 @@ public class VtkDemPainter implements TaskListener, VtkResource
 	 */
 	private String getStatusMsgBrief()
 	{
-		if (cViewBadData == true && vDemSurfaceBad != null)
-			return "Loaded: Reg.";
-		if (cViewBadData == false && vDemSurfaceReg != null)
-			return "Loaded: Val.";
+		VtkDemSurface tmpSurface = vDemSurfaceM.get(cViewDataMode);
+		if (tmpSurface != null)
+			return "Loaded: " + cViewDataMode.getDescrBrief();
 
 		if (workExp != null)
 			return "Failure";
@@ -413,10 +399,7 @@ public class VtkDemPainter implements TaskListener, VtkResource
 		if (isReady() == true)
 		{
 			retMsg += "\n";
-			if (cViewBadData == false)
-				retMsg += "Mode: Valid - View only valid data.";
-			else
-				retMsg += "Mode: Regular - View valid and invalid data";
+			retMsg += "Mode: " + cViewDataMode + " - " + cViewDataMode.getDescrFull();
 		}
 
 		return retMsg;

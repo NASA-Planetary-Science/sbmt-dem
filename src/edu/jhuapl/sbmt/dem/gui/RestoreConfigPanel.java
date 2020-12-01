@@ -82,13 +82,21 @@ public class RestoreConfigPanel extends GlassPanel implements ActionListener
 		cntPartFiles = 0;
 		for (Dem aItem : workConfigM.keySet())
 		{
+			DemConfigAttr tmpDCA = workConfigM.get(aItem);
+
+			// Skip over all partial loads
 			if (SourceUtil.getState(aItem.getSource()) == SourceState.Partial)
 			{
-				cntPartFiles++;
+				// Keep track of (skipped) partial loads only if they were active
+				boolean isActiveLoad = tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true;
+				isActiveLoad |= tmpDCA.getDrawAttr().getIsExtShown() == true;
+				isActiveLoad |= tmpDCA.getDrawAttr().getIsIntShown() == true;
+				if (isActiveLoad == true)
+					cntPartFiles++;
+
 				continue;
 			}
 
-			DemConfigAttr tmpDCA = workConfigM.get(aItem);
 			if (tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true)
 				cntShowAna++;
 			if (tmpDCA.getDrawAttr().getIsExtShown() == true)

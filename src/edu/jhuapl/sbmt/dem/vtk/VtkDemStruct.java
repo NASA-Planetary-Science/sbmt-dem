@@ -38,12 +38,12 @@ public class VtkDemStruct
 	public final vtkPolyData vInteriorPD;
 	public final vtkPolyData vExteriorPD;
 
-	public final boolean isViewBadData;
+	public final DataMode viewDataMode;
 
 	/** Standard Constructor */
 	public VtkDemStruct(Vector3D aCenterOfDEM, Map<String, KeyValueNode> aKeyValueM, List<FeatureType> aFeatureTypeL,
 			Map<FeatureType, vtkFloatArray> aValuesPerCellM, Map<FeatureType, vtkFloatArray> aValuesPerPointM,
-			vtkPolyData aInteriorPD, vtkPolyData aExteriorPD, boolean aIsViewBadData)
+			vtkPolyData aInteriorPD, vtkPolyData aExteriorPD, DataMode aViewDataMode)
 	{
 		centerOfDEM = aCenterOfDEM;
 		keyValueM = aKeyValueM;
@@ -55,7 +55,7 @@ public class VtkDemStruct
 		vInteriorPD = aInteriorPD;
 		vExteriorPD = aExteriorPD;
 
-		isViewBadData = aIsViewBadData;
+		viewDataMode = aViewDataMode;
 	}
 
 }

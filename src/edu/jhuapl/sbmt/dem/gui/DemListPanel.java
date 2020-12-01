@@ -390,6 +390,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 
 		// Update the list of items
 		refItemManager.setAllItems(tmpS);
+		refItemManager.setSelectedItems(ImmutableList.of());
 
 		// Save the changes to the configuration file(s)
 		Task tmpTask = new SilentTask();

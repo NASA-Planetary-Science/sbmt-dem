@@ -10,6 +10,7 @@ import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemConfigAttr;
 import edu.jhuapl.sbmt.dem.DemStruct;
 import edu.jhuapl.sbmt.dem.io.DemLoadUtil;
+import edu.jhuapl.sbmt.dem.vtk.DataMode;
 import edu.jhuapl.sbmt.dem.vtk.ItemDrawAttr;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 
@@ -80,7 +81,10 @@ public class DemMetadata implements MetadataManager
 			}
 
 			// Synthesize the DemConfigAttr
-			DemConfigAttr tmpDCA = new DemConfigAttr(-1, aKey.name, ItemDrawAttr.Default, false, aKey.viewBadData, null);
+			DataMode tmpDataMode = DataMode.Regular;
+			if (aKey.viewBadData == false)
+				tmpDataMode = DataMode.Valid;
+			DemConfigAttr tmpDCA = new DemConfigAttr(-1, aKey.name, ItemDrawAttr.Default, false, tmpDataMode, null);
 			aStoreConfigM.put(tmpDem, tmpDCA);
 		}
 	}
