@@ -122,7 +122,7 @@ public class ProfileTablePanel extends JPanel
 		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
 
 		titleL = new JLabel("Profiles: ---");
-		add(titleL, "growx,span,split");
+		add(titleL, "growx,pushx,span,split");
 		add(itemAddB, "w 24!,h 24!");
 		add(itemDelB, "w 24!,h 24!");
 		add(itemEditTB, "gapright 32,w 24!,h 24!");

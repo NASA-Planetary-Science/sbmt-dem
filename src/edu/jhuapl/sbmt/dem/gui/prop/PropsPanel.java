@@ -82,7 +82,7 @@ public class PropsPanel extends JPanel implements ActionListener, ItemEventListe
 
 		JTable itemTable = itemILP.getTable();
 		itemTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		add(new JScrollPane(itemTable), "growx,growy,span,h 70::");
+		add(new JScrollPane(itemTable), "growx,growy,pushy,span,h 70::");
 
 		updateGui();
 

@@ -127,7 +127,7 @@ public class AnalyzePanel extends JPanel
 		splitPane.setOneTouchExpandable(true);
 
 		controlPanel = new ControlPanel(aDemManager, profileManager, pickManager, priPicker, aItem, renderer, vPriSurface,
-				plot);
+				plot, tmpStatusBarPanel);
 
 		// Form the GUI
 		setLayout(new MigLayout("", "0[]0", "0[]0"));

@@ -60,7 +60,7 @@ public class StatusPanel extends JPanel implements ActionListener
 		abortB = GuiUtil.createJButton("Abort", this);
 		clearB = GuiUtil.createJButton("Clear", this);
 		add(clearB, "ax right,span,split");
-		add(abortB);
+//		add(abortB);
 	}
 
 	/**

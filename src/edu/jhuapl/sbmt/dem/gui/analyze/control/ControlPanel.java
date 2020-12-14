@@ -30,11 +30,13 @@ import edu.jhuapl.saavtk.pick.ControlPointsPicker;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManagerListener;
 import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.structure.PolyLine;
 import edu.jhuapl.saavtk.structure.io.StructureMiscUtil;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemManager;
 import edu.jhuapl.sbmt.dem.gui.analyze.DemPlot;
+import edu.jhuapl.sbmt.dem.gui.analyze.PlateDataPickListener;
 import edu.jhuapl.sbmt.dem.gui.popup.DemGuiUtil;
 import edu.jhuapl.sbmt.dem.gui.table.ProfileGuiUtil;
 import edu.jhuapl.sbmt.dem.io.ProfileIoUtil;
@@ -68,6 +70,7 @@ public class ControlPanel extends JPanel implements ActionListener, ItemEventLis
 
 	// State vars
 	private final ColorBarPainter workCBP;
+	private final PlateDataPickListener workPDPL;
 
 	// Gui vars
 	private final ShowAndSyncPanel showAndSyncPanel;
@@ -81,7 +84,8 @@ public class ControlPanel extends JPanel implements ActionListener, ItemEventLis
 
 	/** Standard Constructor */
 	public ControlPanel(DemManager aDemManager, LineModel<PolyLine> aItemManager, PickManager aPickManager,
-			Picker aPicker, Dem aDem, Renderer aRenderer, VtkDemSurface aPriSurface, DemPlot aPlot)
+			Picker aPicker, Dem aDem, Renderer aRenderer, VtkDemSurface aPriSurface, DemPlot aPlot,
+			StatusNotifier aStatusNotifier)
 	{
 		refDemManager = aDemManager;
 		refItemManager = aItemManager;
@@ -147,6 +151,10 @@ public class ControlPanel extends JPanel implements ActionListener, ItemEventLis
 
 		fileL = new JLabel("");
 		add(fileL, "growx,span,w 0:0:");
+
+		// Add support for readout of the plate data
+		workPDPL = new PlateDataPickListener(aStatusNotifier);
+		aPickManager.getDefaultPicker().addListener(workPDPL);
 
 		// Register for events of interest
 		refItemManager.addListener(this);
@@ -364,8 +372,10 @@ public class ControlPanel extends JPanel implements ActionListener, ItemEventLis
 
 		// Ensure the colorbar is installed
 		refRenderer.addVtkPropProvider(workCBP);
-
 		refRenderer.notifySceneChange();
+
+		// Force an update to the plate data readout
+		workPDPL.updateDisplay();
 	}
 
 	/**
