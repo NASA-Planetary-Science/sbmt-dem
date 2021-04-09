@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import edu.jhuapl.saavtk.view.light.LightCfg;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemConfigAttr;
 import edu.jhuapl.sbmt.dem.DemStruct;
@@ -84,7 +85,8 @@ public class DemMetadata implements MetadataManager
 			DataMode tmpDataMode = DataMode.Regular;
 			if (aKey.viewBadData == false)
 				tmpDataMode = DataMode.Valid;
-			DemConfigAttr tmpDCA = new DemConfigAttr(-1, aKey.name, ItemDrawAttr.Default, false, tmpDataMode, null);
+			DemConfigAttr tmpDCA = new DemConfigAttr(-1, aKey.name, ItemDrawAttr.Default, false, true, LightCfg.Default,
+					tmpDataMode, null);
 			aStoreConfigM.put(tmpDem, tmpDCA);
 		}
 	}

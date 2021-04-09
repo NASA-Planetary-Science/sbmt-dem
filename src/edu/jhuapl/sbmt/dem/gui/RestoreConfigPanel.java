@@ -126,7 +126,7 @@ public class RestoreConfigPanel extends GlassPanel implements ActionListener
 		isEnabled = cntShowInt > 0;
 		showIntCB.setEnabled(isEnabled);
 		showIntCB.setSelected(isEnabled);
-		showIntCB.setText("Display dems: " + cntShowInt);
+		showIntCB.setText("Display DTMs: " + cntShowInt);
 
 		updateGui();
 	}
@@ -167,7 +167,7 @@ public class RestoreConfigPanel extends GlassPanel implements ActionListener
 		custColorizeCB = GuiUtil.createJCheckBox("Custom colorizations: ???", this);
 		custColorizeCB.setEnabled(false);
 		showExtCB = GuiUtil.createJCheckBox("Display boundaries: ???", this);
-		showIntCB = GuiUtil.createJCheckBox("Display dems: ???", this);
+		showIntCB = GuiUtil.createJCheckBox("Display DTMs: ???", this);
 
 		add(showIntCB, "");
 		add(showExtCB, "wrap");
@@ -237,11 +237,11 @@ public class RestoreConfigPanel extends GlassPanel implements ActionListener
 
 		boolean isShowIntItem = showIntCB.isSelected();
 		if (showIntCB.isEnabled() == false)
-			infoMsg += "Diplayed dems: No settings to restore.\n";
+			infoMsg += "Diplayed DTMs: No settings to restore.\n";
 		else if (isShowIntItem == true)
-			infoMsg += "Displayed dems will be shown on main body.\n";
+			infoMsg += "Displayed DTMs will be shown on main body.\n";
 		else
-			infoMsg += "Displayed dems will NOT be shown on main body.\n";
+			infoMsg += "Displayed DTMs will NOT be shown on main body.\n";
 
 		boolean isShowExtItem = showExtCB.isSelected();
 		if (showExtCB.isEnabled() == false)

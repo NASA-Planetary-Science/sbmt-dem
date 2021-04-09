@@ -85,13 +85,13 @@ import glum.util.ThreadUtil;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * Panel used to display a list of DEMs.
+ * Panel used to display a list of {@link Dem}s.
  * <p>
  * The following functionality is supported:
  * <ul>
- * <li>Display list of DEMs in a table
- * <li>Allow user to show, hide, configure, or remove DTMs
- * <li>Allow user to analyze DEMs
+ * <li>Display list of dems in a table.
+ * <li>Allow user to show, hide, configure, or remove dems.
+ * <li>Allow user to analyze dems.
  * </ul>
  *
  * @author lopeznr1
@@ -118,7 +118,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 	private StatusPanel statusPanel;
 	private DemEditPanel editPanel;
 	private FullTaskPanel loadPanel;
-	private JLabel titleL, sourceL;
+	private JLabel titleL;
 	private JButton actionCenterB;
 	private JButton itemAddB, itemDelB, itemEditB;
 	private JButton selectAllB, selectInvertB, selectNoneB;
@@ -147,7 +147,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 
 		// Table header
 		actionCenterB = GuiUtil.formButton(this, IconUtil.getActionCenter());
-		actionCenterB.setToolTipText("Center DEM in window");
+		actionCenterB.setToolTipText("Center DTM in window");
 
 		itemAddB = GuiUtil.formButton(this, IconUtil.getItemAdd());
 		itemAddB.setToolTipText(ToolTipUtil.getItemAdd());
@@ -167,7 +167,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 		selectAllB = GuiUtil.formButton(this, IconUtil.getSelectAll());
 		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
 
-		titleL = new JLabel("DEMs: ---");
+		titleL = new JLabel("DTMs: ---");
 		add(titleL, "growx,span,split");
 		add(actionCenterB, "w 24!,h 24!,gapright 24");
 		add(itemAddB, "w 24!,h 24!");
@@ -180,7 +180,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 		// Table Content
 		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
 		tmpComposer.addAttribute(LookUp.IsAnalyzePanel, Boolean.class, "Ana.", 40);
-		tmpComposer.addAttribute(LookUp.IsShowInterior, Boolean.class, "DEM", 40);
+		tmpComposer.addAttribute(LookUp.IsShowInterior, Boolean.class, "DTM", 40);
 		tmpComposer.addAttribute(LookUp.IsShowExterior, Boolean.class, "Bndr", 40);
 //		tmpComposer.addAttribute(LookUp.ColorInterior, ColorProvider.class, "DEM Color", 50);
 		tmpComposer.addAttribute(LookUp.ColorExterior, ColorProvider.class, "Bndr", 50);
@@ -226,17 +226,9 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 		popupMenu = DemGuiUtil.formPopupMenu(refItemManager, this, refRenderer, aSmallBody);
 		itemTable.addMouseListener(new TablePopupHandler(refItemManager, popupMenu));
 
-		// Source area
-		JLabel tmpL = new JLabel("Src:");
-		sourceL = new JLabel("");
-		add(tmpL, "span,split");
-		add(sourceL, "growx,w 100:100:,wrap");
-
-		add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
-
 		// Action buttons
 		anaItemCB = GuiUtil.createJCheckBox("Analyze Window", this);
-		intItemCB = GuiUtil.createJCheckBox("Show DEM", this);
+		intItemCB = GuiUtil.createJCheckBox("Show DTM", this);
 		extItemCB = GuiUtil.createJCheckBox("Show Boundary", this);
 
 		// Form the left and right sub panels
@@ -422,7 +414,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 	{
 		// Prompt the user for the files
 		List<String> extL = new ArrayList<>(Arrays.asList("fit", "fits", "obj"));
-		File[] fileArr = CustomFileChooser.showOpenDialog(this, "Load DEM(s)", extL, true);
+		File[] fileArr = CustomFileChooser.showOpenDialog(this, "Load DTM(s)", extL, true);
 		if (fileArr == null || fileArr.length == 0)
 			return;
 
@@ -434,7 +426,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 			loadPanel.setTabSize(3);
 		}
 		loadPanel.reset();
-		loadPanel.setTitle("DEM files to load: " + fileArr.length);
+		loadPanel.setTitle("DTM files to load: " + fileArr.length);
 		loadPanel.setVisible(true);
 
 		// Process all of the files
@@ -612,7 +604,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 		Range<Double> radialRange = Range.closed(radialMinVal, radialMaxVal);
 		radialResetB = GuiUtil.formButton(this, IconUtil.getActionReset());
 		radialResetB.setToolTipText(ToolTipUtil.getItemReset());
-		radialL1 = new JLabel("Rad.:");
+		radialL1 = new JLabel("Offset:");
 		radialL1.setToolTipText("Radial Offset");
 		radialL2 = new JLabel("km");
 		radialNF = new GNumberField(this, new DecimalFormat("0.000"), radialRange);
@@ -656,7 +648,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 		statusPanel = new StatusPanel(refItemManager);
 
 		JTabbedPane retPane = new JTabbedPane();
-		retPane.add("Bndr Color", colorExtPanel);
+		retPane.add("Color", colorExtPanel);
 		retPane.add("Details", detailsPanel);
 		retPane.add("Status", statusPanel);
 		retPane.setSelectedIndex(1);
@@ -825,25 +817,10 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 
 		// Table title
 		DecimalFormat cntFormat = new DecimalFormat("#,###");
-		String infoStr = "DEMs: " + cntFormat.format(cntFullItems);
+		String infoStr = "DTMs: " + cntFormat.format(cntFullItems);
 		if (cntPickItems > 0)
 			infoStr += "  (Selected: " + cntFormat.format(cntPickItems) + ")";
 		titleL.setText(infoStr);
-
-		// Source area
-		String srcText = "";
-		String srcTips = "";
-		if (cntPickItems == 1)
-		{
-			srcText = pickItem.getSource().getName();
-			srcTips = pickItem.getSource().getPath();
-		}
-		else if (cntPickItems > 1)
-		{
-			srcText = "Multiple dems selected: " + cntPickItems;
-		}
-		sourceL.setText(srcText);
-		sourceL.setToolTipText(srcTips);
 	}
 
 }

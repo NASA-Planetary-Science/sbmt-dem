@@ -40,6 +40,7 @@ import edu.jhuapl.saavtk.pick.PickTarget;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.view.AssocActor;
+import edu.jhuapl.saavtk.view.light.LightCfg;
 import edu.jhuapl.saavtk.vtk.VtkUtil;
 import edu.jhuapl.sbmt.dem.gui.analyze.AnalyzePanel;
 import edu.jhuapl.sbmt.dem.gui.analyze.AnalyzeWindowListener;
@@ -97,6 +98,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	private Map<Dem, DemStruct> structM;
 	private Map<Dem, AnalyzePanel> analyzeM;
 	private GroupColorProvider exteriorGCP;
+	private LightCfg systemLightCfg;
 	private int globIdx;
 	private boolean isInitDone;
 
@@ -121,10 +123,15 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 		structM = new LinkedHashMap<>();
 		analyzeM = new HashMap<>();
 		exteriorGCP = new RandomizeGroupColorProvider(0);
+		systemLightCfg = LightCfg.Invalid;
 		globIdx = 0;
 		isInitDone = false;
 
-		workExecutor = Executors.newWorkStealingPool();
+		// Limit max simultaneous downloads to 4 
+		int numProcs = Runtime.getRuntime().availableProcessors();
+		if (numProcs > 4)
+			numProcs = 4;
+		workExecutor = Executors.newWorkStealingPool(numProcs);
 		workLastUpdateTime = 0L;
 
 		vPainterM = new HashMap<>();
@@ -256,7 +263,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	{
 		DemConfigAttr tmpDCA = configM.get(aItem);
 		ItemDrawAttr retIDA = tmpDCA.getDrawAttr();
-		if (tmpDCA.getIsColorizeInterior() == false)
+		if (tmpDCA.getIsSyncCoring() == false)
 			retIDA = retIDA.cloneWithInteriorColorProvider(ColorProvider.Invalid);
 
 		if (retIDA.getExtCP() == ColorProvider.Invalid)
@@ -305,7 +312,17 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	public boolean getIsSyncWithMain(Dem aItem)
 	{
 		DemConfigAttr tmpDCA = configM.get(aItem);
-		return tmpDCA.getIsColorizeInterior();
+		return tmpDCA.getIsSyncCoring();
+	}
+
+	/**
+	 * Returns whether the specified item's lighting should be synchronized from
+	 * the main window.
+	 */
+	public boolean getIsSyncLightingWithMain(Dem aItem)
+	{
+		DemConfigAttr tmpDCA = configM.get(aItem);
+		return tmpDCA.getIsSyncLighting();
 	}
 
 	/**
@@ -326,7 +343,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	}
 
 	/**
-	 * Returns the current radial offset (of all DEMs).
+	 * Returns the radial offset associated with the specified item.
 	 */
 	public double getRadialOffset(Dem aItem)
 	{
@@ -537,6 +554,21 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	}
 
 	/**
+	 * Sets the default {@link LightCfg}. All (relevant) {@link AnalyzePanel}s
+	 * will be updated to reflect the specified {@link LightCfg}.
+	 */
+	public void setSystemLightCfg(LightCfg aLightCfg)
+	{
+		systemLightCfg = aLightCfg;
+
+		for (Dem aItem : analyzeM.keySet())
+		{
+			DemConfigAttr tmpDCA = configM.get(aItem);
+			updateLightCfg(aItem, tmpDCA);
+		}
+	}
+
+	/**
 	 * Sets the description associated with the list of items.
 	 */
 	public void setDescription(Collection<Dem> aItemC, String aDescription)
@@ -652,12 +684,33 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	 * @param aItemC The list of items of interest.
 	 * @param aBool True if the objects colorization should be synchronized.
 	 */
-	public void setIsSyncWithMain(Collection<Dem> aItemC, boolean aBool)
+	public void setIsSyncColoring(Collection<Dem> aItemC, boolean aBool)
 	{
 		for (Dem aItem : aItemC)
 		{
 			DemConfigAttr tmpDCA = configM.get(aItem);
-			tmpDCA = tmpDCA.cloneWithIsColorizeInterior(aBool);
+			tmpDCA = tmpDCA.cloneWithSyncColoring(aBool);
+			configM.put(aItem, tmpDCA);
+		}
+
+		// Send out the appropriate notifications
+		updateVtkVars(aItemC);
+		notifyListeners(this, ItemEventType.ItemsMutated);
+	}
+
+	/**
+	 * Sets whether the specified list of item's Lighting should be synchronized
+	 * from the main window.
+	 *
+	 * @param aItemC The list of items of interest.
+	 * @param aBool True if the objects colorization should be synchronized.
+	 */
+	public void setIsSyncLighting(Collection<Dem> aItemC, boolean aBool)
+	{
+		for (Dem aItem : aItemC)
+		{
+			DemConfigAttr tmpDCA = configM.get(aItem);
+			tmpDCA = tmpDCA.cloneWithSyncLighting(aBool);
 			configM.put(aItem, tmpDCA);
 		}
 
@@ -680,6 +733,26 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	}
 
 	/**
+	 * Sets {@link LightCfg} to be used by the the specified list of items.
+	 *
+	 * @param aItemC The list of items of interest.
+	 * @param aLightCfg The {@link LightCfg} of interest.
+	 */
+	public void setLightCfg(Collection<Dem> aItemC, LightCfg aLightCfg)
+	{
+		for (Dem aItem : aItemC)
+		{
+			DemConfigAttr tmpDCA = configM.get(aItem);
+			tmpDCA = tmpDCA.cloneWithLightCfg(aLightCfg);
+			configM.put(aItem, tmpDCA);
+		}
+
+		// Send out the appropriate notifications
+		updateVtkVars(aItemC);
+		notifyListeners(this, ItemEventType.ItemsMutated);
+	}
+
+	/**
 	 * Sets the opacity of the list of items.
 	 */
 	public void setOpacity(Collection<Dem> aItemC, double aOpacity)
@@ -698,7 +771,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	}
 
 	/**
-	 * Sets the radial offset items.
+	 * Sets the radial offset of the specified list of items.
 	 */
 	public void setRadialOffset(Collection<Dem> aItemC, double aRadialOffset)
 	{
@@ -986,10 +1059,13 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 			return;
 		}
 
-		// Create the AnalyzePanel
+		// Create and install the AnalyzePanel
 		VtkDemSurface tmpSurface = vPainterM.get(aItem).getVtkDemSurface();
 		AnalyzePanel analyzePanel = new AnalyzePanel(this, aItem, tmpSurface, refSmallBody, tmpDCA);
 		analyzeM.put(aItem, analyzePanel);
+
+		// Manually set the initial light configuration
+		updateLightCfg(aItem, tmpDCA);
 
 		// Set up the Analyze window
 		tmpFrame = new JFrame();
@@ -1006,6 +1082,24 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 			tmpWindowCfg.configure(tmpFrame);
 
 		tmpFrame.setVisible(true);
+	}
+
+	/**
+	 * Helper method that updates the {@link LightCfg} associated the Dem's {@link AnalyzePanel}.
+	 */
+	private void updateLightCfg(Dem aItem, DemConfigAttr aItemDCA)
+	{
+		// Bail if no AnalyzePanel
+		AnalyzePanel tmpAnalyzePanel = analyzeM.get(aItem);
+		if (tmpAnalyzePanel == null)
+			return;
+
+		// Update the AnalyzePanel's with the appropriate LightCfg
+		LightCfg tmpLightCfg = aItemDCA.getRenderLC();
+		if (aItemDCA.getIsSyncLighting() == true)
+			tmpLightCfg = systemLightCfg;
+
+		tmpAnalyzePanel.setLightCfg(tmpLightCfg);
 	}
 
 	/**
@@ -1067,6 +1161,9 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 			tmpBool |= tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true;
 			if (tmpBool == true)
 				tmpPainter.vtkStateInit(workExecutor);
+
+			// Update the LightCfg for the corresponding AnalyzePanel
+			updateLightCfg(aItem, tmpDCA);
 		}
 
 		refSceneChangeNotifier.notifySceneChange();

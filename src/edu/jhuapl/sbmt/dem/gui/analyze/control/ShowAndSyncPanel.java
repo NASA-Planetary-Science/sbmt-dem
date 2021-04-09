@@ -42,12 +42,11 @@ public class ShowAndSyncPanel extends JPanel implements ActionListener, ItemEven
 		setLayout(new MigLayout("", "0[]0", "0[][]0"));
 
 		// Dem main area
-		showOnMainWinCB = GuiUtil.createJCheckBox("Show on Main", this);
-		showOnMainWinCB.setToolTipText("Show on main window");
+		showOnMainWinCB = GuiUtil.createJCheckBox("Show on body", this);
 		add(showOnMainWinCB, "wrap");
 
-		syncColoringCB = GuiUtil.createJCheckBox("Sync Coloring", this);
-		syncColoringCB.setToolTipText("Sync coloring with main window");
+		syncColoringCB = GuiUtil.createJCheckBox("Sync coloring to...", this);
+		syncColoringCB.setToolTipText("Sync coloring to body");
 		add(syncColoringCB, "");
 
 		// Register for events of interest
@@ -87,7 +86,7 @@ public class ShowAndSyncPanel extends JPanel implements ActionListener, ItemEven
 	{
 		try
 		{
-			refManager.setIsSyncWithMain(ImmutableList.of(refDem), syncColoringCB.isSelected());
+			refManager.setIsSyncColoring(ImmutableList.of(refDem), syncColoringCB.isSelected());
 		}
 		catch (Throwable aExp)
 		{

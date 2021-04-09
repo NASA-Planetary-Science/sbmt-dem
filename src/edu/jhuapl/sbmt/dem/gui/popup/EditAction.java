@@ -57,7 +57,7 @@ public class EditAction extends PopAction<Dem>
 		aAssocMI.setEnabled(isEnabled);
 
 		// Determine the display string
-		String displayStr = "Edit DEM";
+		String displayStr = "Edit DTM";
 		displayStr = MessageUtil.toPluralForm(displayStr, aItemC);
 
 		// Update the text of the associated MenuItem

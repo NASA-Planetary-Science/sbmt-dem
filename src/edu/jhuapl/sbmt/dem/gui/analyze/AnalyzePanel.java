@@ -22,6 +22,7 @@ import edu.jhuapl.saavtk.status.LocationStatusHandler;
 import edu.jhuapl.saavtk.status.gui.StatusBarPanel;
 import edu.jhuapl.saavtk.structure.PolyLine;
 import edu.jhuapl.saavtk.structure.PolyLineMode;
+import edu.jhuapl.saavtk.view.light.LightCfg;
 import edu.jhuapl.saavtk.view.lod.LodStatusPainter;
 import edu.jhuapl.saavtk.view.lod.gui.LodPanel;
 import edu.jhuapl.sbmt.dem.Dem;
@@ -34,7 +35,6 @@ import edu.jhuapl.sbmt.dem.gui.table.ProfileTablePanel;
 import edu.jhuapl.sbmt.dem.vtk.ItemDrawAttr;
 import edu.jhuapl.sbmt.dem.vtk.VtkDemSurface;
 
-import glum.gui.GuiUtil;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -61,6 +61,7 @@ public class AnalyzePanel extends JPanel
 
 	// Gui vars
 	private final ControlPanel controlPanel;
+	private final LightingPanel lightingPanel;
 	private final Renderer renderer;
 
 	// VTK vars
@@ -113,12 +114,12 @@ public class AnalyzePanel extends JPanel
 		plot = new DemPlot(profileManager, vPriSurface, srcIntCP.getFeatureType());
 
 		// Add the components in
+		lightingPanel = new LightingPanel(aDemManager, aItem);
+
 		JTabbedPane tmpTabbedPane = new JTabbedPane();
 		tmpTabbedPane.add("Chart", plot.getChartPanel());
 		tmpTabbedPane.add("Table", new ProfileTablePanel(profileManager, pickManager, priPicker, aRootSmallBody));
-		tmpTabbedPane.add("Config", formConfigPanel(renderer));
-		tmpTabbedPane.add("Camera: Reg", new CameraRegularPanel(renderer, vPriSurface));
-		tmpTabbedPane.add("Camera: Quat", formCameraQuaternionPanel());
+		tmpTabbedPane.add("View", formViewPanel());
 		tmpTabbedPane.add("Details", formDetailsPanel(aDemManager, aItem));
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, renderer, tmpTabbedPane);
@@ -147,6 +148,7 @@ public class AnalyzePanel extends JPanel
 	public void dispose()
 	{
 		controlPanel.dispose();
+		lightingPanel.dispose();
 	}
 
 	/**
@@ -163,6 +165,26 @@ public class AnalyzePanel extends JPanel
 	public VtkDemSurface getDemSurface()
 	{
 		return vPriSurface;
+	}
+
+	/**
+	 * Sets in the {@link Renderer}'s {@link LightCfg}.
+	 */
+	public void setLightCfg(LightCfg aLightCfg)
+	{
+		// Delegate
+		renderer.setLightCfg(aLightCfg);
+	}
+
+	/**
+	 * Helper method that constructs the "Camera" panel.
+	 */
+	private Component formCameraPanel()
+	{
+		JTabbedPane retTabbedPane = new JTabbedPane();
+		retTabbedPane.add("Regular", new CameraRegularPanel(renderer, vPriSurface));
+		retTabbedPane.add("Quaternion", formCameraQuaternionPanel());
+		return retTabbedPane;
 	}
 
 	/**
@@ -189,33 +211,6 @@ public class AnalyzePanel extends JPanel
 	}
 
 	/**
-	 * Utility helper method to construct a "configuration" panel.
-	 * <p>
-	 * The returned configuration panel is composed of the following child
-	 * panels:
-	 * <ul>
-	 * <li>{@link LodPanel}
-	 * <li>{@link ScaleBarPanel}
-	 * </ul>
-	 */
-	private static JPanel formConfigPanel(Renderer aRenderer)
-	{
-		JPanel retPanel = new JPanel(new MigLayout("", "", ""));
-
-		ScaleBarPainter scaleBarPainter = new ScaleBarPainter(aRenderer);
-		aRenderer.addVtkPropProvider(scaleBarPainter);
-		retPanel.add(new ScaleBarPanel(aRenderer, scaleBarPainter), "span,growx,wrap");
-
-		retPanel.add(GuiUtil.createDivider(), "growx,h 4!,span,wrap");
-
-		LodStatusPainter lodPainter = new LodStatusPainter(aRenderer);
-		aRenderer.addVtkPropProvider(lodPainter);
-		retPanel.add(new LodPanel(aRenderer, lodPainter), "span,growx,wrap");
-
-		return retPanel;
-	}
-
-	/**
 	 * Helper method that constructs a {@link PropsPanel} used to display the
 	 * {@link KeyValueNode}s associated with the {@link Dem}.
 	 */
@@ -227,6 +222,30 @@ public class AnalyzePanel extends JPanel
 		retPanel.setKeyValuePairs(tmpKeyValueM);
 
 		return retPanel;
+	}
+
+	/**
+	 * Helper method that constructs the "View" panel.
+	 */
+	private Component formViewPanel()
+	{
+		// Scale Bar panel
+		ScaleBarPainter scaleBarPainter = new ScaleBarPainter(renderer);
+		renderer.addVtkPropProvider(scaleBarPainter);
+		ScaleBarPanel tmpScaleBarPanel = new ScaleBarPanel(renderer, scaleBarPainter);
+
+		// LOD panel
+		LodStatusPainter lodPainter = new LodStatusPainter(renderer);
+		renderer.addVtkPropProvider(lodPainter);
+		LodPanel tmpLodPanel = new LodPanel(renderer, lodPainter);
+
+		// Form and return the View tab
+		JTabbedPane retTabbedPane = new JTabbedPane();
+		retTabbedPane.add("Camera", formCameraPanel());
+		retTabbedPane.add("Lighting", lightingPanel);
+		retTabbedPane.add("Scale Bar", tmpScaleBarPanel);
+		retTabbedPane.add("LOD", tmpLodPanel);
+		return retTabbedPane;
 	}
 
 }

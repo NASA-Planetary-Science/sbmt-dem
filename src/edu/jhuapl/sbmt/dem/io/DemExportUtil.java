@@ -33,8 +33,8 @@ import glum.source.SourceUtil;
 import glum.util.ThreadUtil;
 
 /**
- * Collection of utility method to aide in the exporting dem data to a variety
- * of file formats.
+ * Collection of utility method to aide in the exporting {@link Dem}s content to
+ * a variety of file formats.
  * <p>
  * The following functionality is supported:
  * <ul>
@@ -66,12 +66,12 @@ public class DemExportUtil
 		loadPanel.setTabSize(3);
 
 		loadPanel.reset();
-		loadPanel.setTitle("DEM files to save " + aItemL.size());
+		loadPanel.setTitle("DTM files to save " + aItemL.size());
 		loadPanel.setVisible(true);
 
 		// Process all of the dems
 		int passCnt = 0;
-		loadPanel.logRegln("DEMs to process: " + aItemL.size());
+		loadPanel.logRegln("DTMs to process: " + aItemL.size());
 		loadPanel.logRegln("\tFolder: " + dstDir + "\n");
 		for (Dem aItem : aItemL)
 		{
@@ -128,7 +128,8 @@ public class DemExportUtil
 	}
 
 	/**
-	 * Utility method that takes aDem and exports it to a user provided file.
+	 * Utility method that takes a {@link VtkDemSurface} and exports it to a user
+	 * provided file.
 	 * <p>
 	 * The exported file will be in the OBJ format.
 	 *
@@ -157,7 +158,8 @@ public class DemExportUtil
 	}
 
 	/**
-	 * Utility method that takes aDem and exports it to a user provided file.
+	 * Utility method that takes a {@link VtkDemSurface} and exports it to a user
+	 * provided file.
 	 * <p>
 	 * See also {@link PolyDataUtil#saveShapeModelAsPLT}
 	 *
@@ -184,7 +186,8 @@ public class DemExportUtil
 	}
 
 	/**
-	 * Utility method that takes aDem and exports it to a user provided file.
+	 * Utility method that takes a {@link VtkDemSurface} and exports it to a user
+	 * provided file.
 	 * <p>
 	 * The exported file will be in the STL format.
 	 *
@@ -213,7 +216,8 @@ public class DemExportUtil
 	}
 
 	/**
-	 * Utility method that takes aDem and exports it to a user provided file.
+	 * Utility method that takes a {@link VtkDemSurface} and exports it to a user
+	 * provided file.
 	 *
 	 * See also {@link VtkDemSurface#savePlateData(File)}
 	 *

@@ -46,7 +46,7 @@ public class SaveDemFileAction extends PopAction<Dem>
 		aAssocMI.setEnabled(isEnabled);
 
 		// Determine the display string
-		String displayStr = "Save DEM";
+		String displayStr = "Save DTM";
 		displayStr = MessageUtil.toPluralForm(displayStr, aItemC);
 
 		// Update the text of the associated MenuItem

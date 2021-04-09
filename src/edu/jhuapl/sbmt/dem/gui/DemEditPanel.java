@@ -15,6 +15,8 @@ import javax.swing.JTextField;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.gui.util.Colors;
+import edu.jhuapl.saavtk.gui.util.IconUtil;
+import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemManager;
 import edu.jhuapl.sbmt.dem.gui.popup.DemGuiUtil;
@@ -28,14 +30,14 @@ import glum.gui.panel.GlassPanel;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * UI component that allows a collection of DEMs to be edited.
+ * UI component that allows a collection of {@link Dem}s to be edited.
  *
  * @author lopeznr1
  */
 public class DemEditPanel extends GlassPanel implements ActionListener
 {
 	// Constants
-	private static final String ERR_MSG_NO_ITEMS_PROVIDED = "No DEMs have been selected.";
+	private static final String ERR_MSG_NO_ITEMS_PROVIDED = "No DTMs have been selected.";
 
 	// Ref vars
 	private final DemManager refItemManager;
@@ -44,7 +46,7 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 	private JLabel titleL, descriptionL;
 	private GTextField descriptionTF;
 	private JCheckBox viewBadDataCB;
-	private JButton applyB, closeB, resetB;
+	private JButton applyB, closeB, descrResetB, mainResetB;
 	private JLabel statusL;
 
 	// State vars
@@ -63,16 +65,19 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 		oldDescrip = "";
 		oldViewDataMode = null;
 
-		setLayout(new MigLayout("", "[right][]", ""));
+		setLayout(new MigLayout("", "[]", ""));
 
 		// Title Area
-		titleL = new JLabel("Edit DEMs", JLabel.CENTER);
+		titleL = new JLabel("Edit DTMs", JLabel.CENTER);
 		add(titleL, "growx,span,wrap 2");
 		add(GuiUtil.createDivider(), "growx,h 4!,span,wrap 12");
 
 		// Action area
+		descrResetB = GuiUtil.formButton(this, IconUtil.getActionReset());
+		descrResetB.setToolTipText(ToolTipUtil.getItemResetMsg("---"));
 		descriptionL = new JLabel("Description:");
 		descriptionTF = new GTextField(this);
+		add(descrResetB, "w 24!,h 24!");
 		add(descriptionL, "");
 		add(descriptionTF, "w 100::,growx,pushx,wrap");
 
@@ -80,14 +85,14 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 		add(viewBadDataCB, "growx,span,wrap");
 
 		statusL = new JLabel(ERR_MSG_NO_ITEMS_PROVIDED);
-		add(statusL, "w 350:,growx,span");
+		add(statusL, "w 350:,growx,span,wrap");
 
 		// Control area
 		applyB = GuiUtil.createJButton("Apply", this);
 		closeB = GuiUtil.createJButton("Close", this);
-		resetB = GuiUtil.createJButton("Reset", this);
+		mainResetB = GuiUtil.createJButton("Reset", this);
 		add(applyB, "ax right,split,span");
-		add(resetB);
+		add(mainResetB);
 		add(closeB);
 
 		// Set up keyboard short cuts
@@ -105,22 +110,27 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 		boolean isEnabled = itemL.size() == 1;
 		descriptionL.setEnabled(isEnabled);
 		descriptionTF.setEnabled(isEnabled);
+		descrResetB.setEnabled(isEnabled);
 
 		// Description area
+		String descrResetTip = null;
 		oldDescrip = null;
 		int tmpAlignment = JTextField.LEFT;
 		if (itemL.size() >= 1)
 		{
 			Dem tmpItem = itemL.get(0);
 			oldDescrip = refItemManager.getDisplayName(tmpItem);
+			descrResetTip = ToolTipUtil.getItemResetMsg(tmpItem.getSource().getName());
 			if (itemL.size() > 1)
 			{
 				oldDescrip = "\u2192" + " multiple items specified " + "\u2190";
+				descrResetTip = null;
 				tmpAlignment = JTextField.CENTER;
 			}
 		}
 		descriptionTF.setHorizontalAlignment(tmpAlignment);
 		descriptionTF.setValue(oldDescrip);
+		descrResetB.setToolTipText(descrResetTip);
 
 		// Dem view DataMode area
 		boolean viewBadDataEnabled = true;
@@ -135,7 +145,7 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 		}
 		else if (DemGuiUtil.isAnyDemViewDataModeNonCofigurable(refItemManager, itemL) == true)
 		{
-			viewBadDataTip = "Some DEM's view mode can not be configured. These will be ignored.";
+			viewBadDataTip = "Some DTM's view mode can not be configured. These will be ignored.";
 		}
 		else if (oldViewDataMode == DataMode.Regular)
 		{
@@ -158,8 +168,10 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 		Object source = aEvent.getSource();
 		if (source == applyB)
 			doActionApply();
-		if (source == resetB)
-			doActionReset();
+		if (source == descrResetB)
+			descriptionTF.setValue(itemL.get(0).getSource().getName());
+		if (source == mainResetB)
+			doActionMainReset();
 		else if (source == closeB)
 			setVisible(false);
 
@@ -181,9 +193,9 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 	}
 
 	/**
-	 * Helper method to handle the reset action.
+	 * Helper method to handle the main reset action.
 	 */
-	private void doActionReset()
+	private void doActionMainReset()
 	{
 		descriptionTF.setValue(oldDescrip);
 
@@ -226,19 +238,26 @@ public class DemEditPanel extends GlassPanel implements ActionListener
 			errMsg = "The selected items can not be configured as a group.";
 
 		// Title area
-		titleL.setText("Edit DEMs: " + itemL.size());
+		titleL.setText("Edit DTMs: " + itemL.size());
 
-		// Reset area
-		String newDescrip = descriptionTF.getValue();
+		// Description area
+		String newDescr = descriptionTF.getValue();
+		String defDescr = "";
+		if (itemL.size() == 1)
+			defDescr = itemL.get(0).getSource().getName();
+		boolean isEnabled = defDescr.equals(newDescr) == false && itemL.size() == 1;
+		descrResetB.setEnabled(isEnabled);
+
+		// Main reset area
 		DataMode newViewDataMode = getViewDataModeFromUI();
-		boolean isEnabled = Objects.equals(newDescrip, oldDescrip) == false && itemL.size() == 1;
+		isEnabled = Objects.equals(newDescr, oldDescrip) == false && itemL.size() == 1;
 		isEnabled |= Objects.equals(newViewDataMode, oldViewDataMode) == false;
-		resetB.setEnabled(isEnabled);
+		mainResetB.setEnabled(isEnabled);
 
 		// Apply area
 		isEnabled = false;
 		if (itemL.size() == 1)
-			isEnabled |= Objects.equals(refItemManager.getDisplayName(itemL.get(0)), newDescrip) == false;
+			isEnabled |= Objects.equals(refItemManager.getDisplayName(itemL.get(0)), newDescr) == false;
 		isEnabled |= Objects.equals(DemGuiUtil.getUnifiedViewDataMode(refItemManager, itemL), newViewDataMode) == false;
 		isEnabled &= errMsg == null;
 		applyB.setEnabled(isEnabled);

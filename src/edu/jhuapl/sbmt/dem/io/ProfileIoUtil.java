@@ -48,8 +48,8 @@ public class ProfileIoUtil
 
 		String line;
 
-		double[] llBegArr = new LatLon().get();
-		double[] llEndArr = new LatLon().get();
+		double[] llBegArr = new double[] { 0.0, 0.0, 1.0 };
+		double[] llEndArr = new double[] { 0.0, 0.0, 1.0 };
 		int lineId = 0;
 
 		List<PolyLine> retItemL = new ArrayList<>();
@@ -90,8 +90,8 @@ public class ProfileIoUtil
 				int aVal = Integer.parseInt(c[3]);
 				Color color = new Color(rVal, gVal, bVal, aVal);
 
-				LatLon begLL = new LatLon(llBegArr);
-				LatLon endLL = new LatLon(llEndArr);
+				LatLon begLL = new LatLon(llBegArr[0], llBegArr[1], llBegArr[2]);
+				LatLon endLL = new LatLon(llEndArr[0], llEndArr[1], llEndArr[2]);
 				List<LatLon> controlPointL = ImmutableList.of(begLL, endLL);
 				PolyLine tmpItem = new PolyLine(lineId, null, controlPointL);
 				tmpItem.setColor(color);

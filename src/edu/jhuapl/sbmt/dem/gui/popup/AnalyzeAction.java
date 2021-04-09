@@ -46,7 +46,7 @@ public class AnalyzeAction extends PopAction<Dem>
 		aAssocMI.setEnabled(isEnabled);
 
 		// Determine the display string
-		String displayStr = "Analyze DEM";
+		String displayStr = "Analyze DTM";
 		displayStr = MessageUtil.toPluralForm(displayStr, aItemC);
 
 		// Update the text of the associated MenuItem

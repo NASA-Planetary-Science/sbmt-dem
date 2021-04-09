@@ -51,7 +51,7 @@ import net.miginfocom.swing.MigLayout;
 
 /**
  * UI panel that provides the functionality for the control area of the
- * {@link AnalyzePanel1}.
+ * AnalyzePanel.
  *
  * @author lopeznr1
  */

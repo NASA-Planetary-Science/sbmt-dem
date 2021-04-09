@@ -86,19 +86,19 @@ public class DemGuiUtil
 	{
 		PopupMenu<Dem> retPM = new PopupMenu<>(aManager);
 
-		retPM.installPopAction(new HideShowInteriorAction(aManager, "DEM"), "Show DEM");
+		retPM.installPopAction(new HideShowInteriorAction(aManager, "DTM"), "Show DTM");
 		retPM.installPopAction(new HideShowExteriorAction(aManager, "Boundary"), "Show Boundary");
 		retPM.addSeparator();
 
 		retPM.installPopAction(new AnalyzeAction(aManager), "Analyze");
-		retPM.installPopAction(new CenterAction(aManager, aRenderer), "Center DEM in Window");
-		retPM.installPopAction(new EditAction(aManager, aParent), "Edit DEM");
+		retPM.installPopAction(new CenterAction(aManager, aRenderer), "Center DTM in Window");
+		retPM.installPopAction(new EditAction(aManager, aParent), "Edit DTM");
 
 		JMenu colorMenu = new JMenu("Boundary Color");
 		retPM.installPopAction(new DemExteriorColorAction(aManager, aParent, colorMenu), colorMenu);
 		retPM.addSeparator();
 
-		retPM.installPopAction(new SaveDemFileAction(aManager, aParent), "Save DEM file");
+		retPM.installPopAction(new SaveDemFileAction(aManager, aParent), "Save DTM file");
 		retPM.installPopAction(new ExportAsCustomModelAction(aManager, aSmallBody, aParent), "Export as Custom Model");
 
 		return retPM;

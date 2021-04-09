@@ -18,6 +18,8 @@ import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.view.ViewChangeReason;
+import edu.jhuapl.saavtk.view.light.LightCfg;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemCatalog;
@@ -110,9 +112,13 @@ public class DemMainPanel extends JTabbedPane
 		aRenderer.addVtkPropProvider(tmpDemManager);
 
 		// Manually register for events of interest
+		aRenderer.addViewChangeListener((aSource, aReason) -> handleViewAction(tmpDemManager, aRenderer, aReason));
 		aPickManager.getDefaultPicker().addListener(tmpDemManager);
 		aPickManager.getDefaultPicker().addPropProvider(tmpDemManager);
 		tmpDemManager.addLoadListener((aSource, aItemC) -> handleLoadChange(tmpDemManager, aItemC, aPickManager));
+
+		// Initial update
+		handleViewAction(tmpDemManager, aRenderer, ViewChangeReason.Light);
 
 		// Form the 'list' panel
 		DemListPanel retPanel = new DemListPanel(tmpDemManager, aRenderer, aPickManager, aSmallBody, catalogL);
@@ -141,9 +147,13 @@ public class DemMainPanel extends JTabbedPane
 		aRenderer.addVtkPropProvider(tmpDemManager);
 
 		// Manually register for events of interest
+		aRenderer.addViewChangeListener((aSource, aReason) -> handleViewAction(tmpDemManager, aRenderer, aReason));
 		aPickManager.getDefaultPicker().addListener(tmpDemManager);
 		aPickManager.getDefaultPicker().addPropProvider(tmpDemManager);
 		tmpDemManager.addLoadListener((aSource, aItemC) -> handleLoadChange(tmpDemManager, aItemC, aPickManager));
+
+		// Initial update
+		handleViewAction(tmpDemManager, aRenderer, ViewChangeReason.Light);
 
 		// Form the 'list' panel
 		DemListPanel retPanel = new DemListPanel(tmpDemManager, aRenderer, aPickManager, aSmallBody, tmpCatalog, null);
@@ -167,6 +177,21 @@ public class DemMainPanel extends JTabbedPane
 			return;
 
 		aPickManager.getDefaultPicker().notifyPropProviderChanged();
+	}
+
+	/**
+	 * Utility helper method that notifies the {@link DemManager} of the system
+	 * {@link LightCfg}.
+	 */
+	private static void handleViewAction(DemManager aManager, Renderer aRenderer, ViewChangeReason aReason)
+	{
+		// Bail if the event is not associated with a change in lighting
+		if (aReason != ViewChangeReason.Light)
+			return;
+
+		// Update the "system" LightCfg
+		LightCfg tmpLightCfg = aRenderer.getLightCfg();
+		aManager.setSystemLightCfg(tmpLightCfg);
 	}
 
 }
