@@ -127,7 +127,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 		globIdx = 0;
 		isInitDone = false;
 
-		// Limit max simultaneous downloads to 4 
+		// Limit max simultaneous downloads to 4
 		int numProcs = Runtime.getRuntime().availableProcessors();
 		if (numProcs > 4)
 			numProcs = 4;
@@ -354,7 +354,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	/**
 	 * Returns the painter associated with the specified item.
 	 * <p>
-	 * A valid {@link VtkDemPainter} will allways be returned, however it may not
+	 * A valid {@link VtkDemPainter} will always be returned, however it may not
 	 * be ready for use and should be checked via
 	 * {@link VtkDemPainter#isReady()}.
 	 */
@@ -1085,7 +1085,8 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	}
 
 	/**
-	 * Helper method that updates the {@link LightCfg} associated the Dem's {@link AnalyzePanel}.
+	 * Helper method that updates the {@link LightCfg} associated the Dem's
+	 * {@link AnalyzePanel}.
 	 */
 	private void updateLightCfg(Dem aItem, DemConfigAttr aItemDCA)
 	{
@@ -1114,12 +1115,12 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 		if (aItemC.size() == 1)
 		{
 			Dem tmpItem = aItemC.iterator().next();
-			briefMsg = "Regional dem: " + getDisplayName(tmpItem);
+			briefMsg = "Regional DTM: " + getDisplayName(tmpItem);
 			detailMsg = tmpItem.getSource().getPath();
 		}
 		else if (aItemC.size() > 1)
 		{
-			briefMsg = "Multiple regional dems selected: " + aItemC.size();
+			briefMsg = "Multiple regional DTMs selected: " + aItemC.size();
 
 			int currCnt = 0;
 			detailMsg = "<html>";

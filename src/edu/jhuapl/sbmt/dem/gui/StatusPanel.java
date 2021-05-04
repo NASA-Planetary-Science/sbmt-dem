@@ -190,7 +190,7 @@ public class StatusPanel extends JPanel implements ActionListener
 			}
 
 			infoMsg += "Items cached in system memory (ram):\n";
-			infoMsg += "\tDems: " + cntInMemory;
+			infoMsg += "\tDTMs: " + cntInMemory;
 			// + " Disk space: " + tmpBU.getString(totDiskSize) + "\n";
 		}
 
