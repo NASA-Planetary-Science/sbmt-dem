@@ -1131,7 +1131,8 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 				if (currCnt == 5)
 				{
 					int numRemain = aItemC.size() - currCnt;
-					detailMsg += "<br>plus " + numRemain + " others.";
+					if (numRemain > 0)
+						detailMsg += "<br>plus " + numRemain + " others.";
 					break;
 				}
 				detailMsg += "<br>";
