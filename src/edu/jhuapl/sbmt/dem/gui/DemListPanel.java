@@ -670,7 +670,7 @@ public class DemListPanel extends JPanel implements ActionListener, ItemEventLis
 			restoreM.put(aItem, tmpDCA);
 
 			// Determine if there is state that can be restored
-			isRestoreAvail |= tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true;
+			isRestoreAvail |= tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().isShown() == true;
 			isRestoreAvail |= tmpDCA.getDrawAttr().getIsExtShown() == true;
 			isRestoreAvail |= tmpDCA.getDrawAttr().getIsIntShown() == true;
 		}
