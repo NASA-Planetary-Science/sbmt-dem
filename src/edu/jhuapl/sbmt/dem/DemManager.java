@@ -163,7 +163,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 			DemConfigAttr tmpDCA = configM.get(aItem);
 			WindowCfg tmpWC = tmpDCA.getWindowCfg();
 			if (tmpWC != null)
-				tmpDCA = tmpDCA.cloneWithWindowCfg(tmpWC.cloneWithIsShown(false));
+				tmpDCA = tmpDCA.cloneWithWindowCfg(tmpWC.withIsShown(false));
 
 			ItemDrawAttr tmpIDA = tmpDCA.getDrawAttr();
 			tmpIDA = tmpIDA.cloneWithExteriorIsShown(false);
@@ -281,7 +281,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 	public boolean getIsDemAnalyzed(Dem aItem)
 	{
 		DemConfigAttr tmpDCA = configM.get(aItem);
-		if (tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true)
+		if (tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().isShown() == true)
 			return true;
 
 		return false;
@@ -497,7 +497,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 
 			// Show the Analyze window if appropriate
 			WindowCfg tmpWC = getConfigAttr(aItem).getWindowCfg();
-			if (tmpWC != null && tmpWC.getIsShown() == true)
+			if (tmpWC != null && tmpWC.isShown() == true)
 				showAnalyzePanel(aItem, true);
 		}
 
@@ -1037,7 +1037,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 		WindowCfg tmpWC = tmpDCA.getWindowCfg();
 		if (tmpWC != null)
 		{
-			tmpDCA = tmpDCA.cloneWithWindowCfg(tmpWC.cloneWithIsShown(aIsShown));
+			tmpDCA = tmpDCA.cloneWithWindowCfg(tmpWC.withIsShown(aIsShown));
 			configM.put(aItem, tmpDCA);
 		}
 
@@ -1160,7 +1160,7 @@ public class DemManager extends BaseItemManager<Dem> implements PickListener, Vt
 			// Start a load if necessary
 			DemConfigAttr tmpDCA = configM.get(aItem);
 			boolean tmpBool = tmpPainter.isLoadNeeded() == true;
-			tmpBool |= tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true;
+			tmpBool |= tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().isShown() == true;
 			if (tmpBool == true)
 				tmpPainter.vtkStateInit(workExecutor);
 

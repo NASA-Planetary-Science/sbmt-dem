@@ -318,11 +318,11 @@ public class DemCatalogUtil
 				WindowCfg tmpWindowCfg = tmpProp.getWindowCfg();
 				if (tmpWindowCfg != null)
 				{
-					boolean isShown = tmpWindowCfg.getIsShown();
-					int posX = tmpWindowCfg.getPosX();
-					int posY = tmpWindowCfg.getPosY();
-					int dimX = tmpWindowCfg.getDimX();
-					int dimY = tmpWindowCfg.getDimY();
+					boolean isShown = tmpWindowCfg.isShown();
+					int posX = tmpWindowCfg.posX();
+					int posY = tmpWindowCfg.posY();
+					int dimX = tmpWindowCfg.dimX();
+					int dimY = tmpWindowCfg.dimY();
 					tmpBW.write("win," + isShown + "," + posX + "," + posY + "," + dimX + "," + dimY + "\n");
 				}
 

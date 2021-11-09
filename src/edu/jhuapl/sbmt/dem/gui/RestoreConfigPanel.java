@@ -88,7 +88,7 @@ public class RestoreConfigPanel extends GlassPanel implements ActionListener
 			if (SourceUtil.getState(aItem.getSource()) == SourceState.Partial)
 			{
 				// Keep track of (skipped) partial loads only if they were active
-				boolean isActiveLoad = tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true;
+				boolean isActiveLoad = tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().isShown() == true;
 				isActiveLoad |= tmpDCA.getDrawAttr().getIsExtShown() == true;
 				isActiveLoad |= tmpDCA.getDrawAttr().getIsIntShown() == true;
 				if (isActiveLoad == true)
@@ -97,7 +97,7 @@ public class RestoreConfigPanel extends GlassPanel implements ActionListener
 				continue;
 			}
 
-			if (tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().getIsShown() == true)
+			if (tmpDCA.getWindowCfg() != null && tmpDCA.getWindowCfg().isShown() == true)
 				cntShowAna++;
 			if (tmpDCA.getDrawAttr().getIsExtShown() == true)
 				cntShowExt++;
@@ -196,7 +196,7 @@ public class RestoreConfigPanel extends GlassPanel implements ActionListener
 			WindowCfg tmpWC = tmpDCA.getWindowCfg();
 			if (isShowAna == false && tmpWC != null)
 			{
-				tmpWC = new WindowCfg(false, tmpWC.getPosX(), tmpWC.getPosY(), tmpWC.getDimX(), tmpWC.getDimY());
+				tmpWC = new WindowCfg(false, tmpWC.posX(), tmpWC.posY(), tmpWC.dimX(), tmpWC.dimY());
 				tmpDCA = tmpDCA.cloneWithWindowCfg(tmpWC);
 			}
 

@@ -78,7 +78,7 @@ public class ActionUtil
 					posY = maxPosY;
 			}
 			else
-				tmpDCA = tmpDCA.cloneWithWindowCfg(tmpDCA.getWindowCfg().cloneWithIsShown(true));
+				tmpDCA = tmpDCA.cloneWithWindowCfg(tmpDCA.getWindowCfg().withIsShown(true));
 
 			configM.put(aItem, tmpDCA);
 		}
