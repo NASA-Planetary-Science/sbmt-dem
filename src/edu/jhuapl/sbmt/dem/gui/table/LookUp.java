@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.dem.gui.table;
 
 /**
  * Enums that define the available table columns for items of type
- * {@link Profile}.
+ * {@link #Profile}.
  *
  * @author lopeznr1
  */
