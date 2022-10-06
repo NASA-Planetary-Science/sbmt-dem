@@ -278,7 +278,7 @@ public class DemExportUtil
 			vTmpIntPD.BuildCells();
 			vtkIdList idList = new vtkIdList();
 
-			int numCells = vTmpIntPD.GetNumberOfCells();
+			int numCells = (int)vTmpIntPD.GetNumberOfCells();
 			for (int aCellIdx = 0; aCellIdx < numCells; ++aCellIdx)
 			{
 				double[] pt0 = new double[3];
@@ -287,9 +287,9 @@ public class DemExportUtil
 				double[] center = new double[3];
 
 				vTmpIntPD.GetCellPoints(aCellIdx, idList);
-				int id0 = idList.GetId(0);
-				int id1 = idList.GetId(1);
-				int id2 = idList.GetId(2);
+				int id0 = (int)idList.GetId(0);
+				int id1 = (int)idList.GetId(1);
+				int id2 = (int)idList.GetId(2);
 				points.GetPoint(id0, pt0);
 				points.GetPoint(id1, pt1);
 				points.GetPoint(id2, pt2);

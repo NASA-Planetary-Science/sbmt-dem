@@ -155,11 +155,11 @@ public class VtkDemSurface extends GenericPolyhedralModel implements VtkResource
 		if (vTmpFA == null)
 			return null;
 
-		double[] tmpRangeArr = vTmpFA.GetValueRange();
+		float[] tmpRangeArr = vTmpFA.GetValueRange();
 		if (tmpRangeArr[0] > tmpRangeArr[1])
 			return Range.singleton(Double.NaN);
 
-		return Range.closed(tmpRangeArr[0], tmpRangeArr[1]);
+		return Range.closed((double)tmpRangeArr[0], (double)tmpRangeArr[1]);
 	}
 
 	/**
@@ -388,7 +388,7 @@ public class VtkDemSurface extends GenericPolyhedralModel implements VtkResource
 
 		vExteriorA.GetProperty().SetColor(tmpColor.getRed() / 255.0, tmpColor.getGreen() / 255.0,
 				tmpColor.getBlue() / 255.0);
-		vExteriorA.GetProperty().SetLineWidth(1.0);
+		vExteriorA.GetProperty().SetLineWidth(1.0f);
 	}
 
 	/**
