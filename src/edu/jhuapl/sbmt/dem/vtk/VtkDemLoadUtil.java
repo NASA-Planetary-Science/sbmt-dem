@@ -25,7 +25,7 @@ import edu.jhuapl.saavtk.feature.FeatureType;
 import edu.jhuapl.saavtk.model.PolyhedralModel.ColoringValueType;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.vtk.VtkUtil;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.common.client.SmallBodyModel;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemException;
 import edu.jhuapl.sbmt.dem.DemManager;
