@@ -113,7 +113,7 @@ public class VtkDemSurface extends GenericPolyhedralModel implements VtkResource
 		initializeActorsAndMappers();
 
 		vInteriorA = (VtkLodActor) getSmallBodyActor();
-		vInteriorPD = getSmallBodyPolyDataAtPosition();
+		vInteriorPD = getSmallBodyPolyData();
 		vColorLT = new vtkLookupTable();
 	}
 
