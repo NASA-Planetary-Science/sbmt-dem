@@ -11,6 +11,7 @@ import java.util.Set;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 
+import edu.jhuapl.saavtk.config.IViewConfig;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter;
 import edu.jhuapl.saavtk.gui.ShapeModelImporter.FormatType;
@@ -187,7 +188,7 @@ public class CustomShapeModelUtil
 	 * <p>
 	 * Note the {@link ViewConfig} will not be modified.
 	 */
-	private static void writeMetaDataForCustomShapeModel(File aFile, String aShapeModelName, ViewConfig aConfig)
+	private static void writeMetaDataForCustomShapeModel(File aFile, String aShapeModelName, IViewConfig aConfig)
 			throws IOException
 	{
 		SmallBodyViewConfig tmpConfig = (SmallBodyViewConfig) aConfig.clone();
