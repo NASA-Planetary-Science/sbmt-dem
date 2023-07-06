@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-import edu.jhuapl.sbmt.dem.KeyValueNode;
+import edu.jhuapl.sbmt.core.util.KeyValueNode;
 
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;

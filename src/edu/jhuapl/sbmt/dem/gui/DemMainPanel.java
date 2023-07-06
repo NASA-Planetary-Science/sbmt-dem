@@ -20,7 +20,7 @@ import edu.jhuapl.saavtk.status.StatusNotifier;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.view.ViewChangeReason;
 import edu.jhuapl.saavtk.view.light.LightCfg;
-import edu.jhuapl.sbmt.common.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.config.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemCatalog;
 import edu.jhuapl.sbmt.dem.DemManager;

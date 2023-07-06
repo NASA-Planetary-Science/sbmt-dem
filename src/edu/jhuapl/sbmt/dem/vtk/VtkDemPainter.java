@@ -12,10 +12,10 @@ import com.google.common.collect.ImmutableList;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.vtk.VtkResource;
+import edu.jhuapl.sbmt.core.util.KeyValueNode;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemException;
 import edu.jhuapl.sbmt.dem.DemManager;
-import edu.jhuapl.sbmt.dem.KeyValueNode;
 
 import glum.source.Source;
 import glum.source.SourceState;
