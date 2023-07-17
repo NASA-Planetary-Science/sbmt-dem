@@ -12,7 +12,7 @@ import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.feature.FeatureType;
-import edu.jhuapl.sbmt.dem.KeyValueNode;
+import edu.jhuapl.sbmt.core.util.KeyValueNode;
 
 /**
  * Intermediate object used to hold VTK state associated with dem data.

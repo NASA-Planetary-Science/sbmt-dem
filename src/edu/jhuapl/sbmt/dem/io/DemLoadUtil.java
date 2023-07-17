@@ -7,9 +7,9 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
+import edu.jhuapl.sbmt.core.util.KeyValueNode;
 import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemStruct;
-import edu.jhuapl.sbmt.dem.KeyValueNode;
 
 import glum.source.LocalSource;
 import glum.source.Source;

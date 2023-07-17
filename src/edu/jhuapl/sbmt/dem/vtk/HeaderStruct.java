@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.dem.vtk;
 import java.util.List;
 import java.util.Map;
 
-import edu.jhuapl.sbmt.dem.KeyValueNode;
+import edu.jhuapl.sbmt.core.util.KeyValueNode;
 
 import nom.tam.fits.BasicHDU;
 
