@@ -11,9 +11,9 @@ import edu.jhuapl.sbmt.dem.Dem;
 import edu.jhuapl.sbmt.dem.DemConfigAttr;
 import edu.jhuapl.sbmt.dem.DemStruct;
 import edu.jhuapl.sbmt.dem.io.DemLoadUtil;
+import edu.jhuapl.sbmt.dem.legacy.DEMKey;
 import edu.jhuapl.sbmt.dem.vtk.DataMode;
 import edu.jhuapl.sbmt.dem.vtk.ItemDrawAttr;
-import edu.jhuapl.sbmt.dtm.model.DEMKey;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
