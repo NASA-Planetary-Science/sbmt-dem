@@ -45,7 +45,6 @@ maven verify:
         - target/failsafe-reports/TEST-*.xml
   # Allows a this job to fail, and the pipeline will continue
   allow_failure: true
-  when: manual
 
 maven deploy:
   stage: deploy
