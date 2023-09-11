@@ -27,21 +27,6 @@
 	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   <dependencies>
-  	<dependency>
-		<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
-		<artifactId>saavtk</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</dependency>
-	<dependency>
-		<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
-		<artifactId>sbmt-core</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</dependency>
-	<dependency>
-		<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
-		<artifactId>sbmt-config</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</dependency>
 	<dependency>
 		<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 		<artifactId>sbmt-util</artifactId>
