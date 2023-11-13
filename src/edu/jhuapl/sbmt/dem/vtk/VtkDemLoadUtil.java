@@ -279,14 +279,14 @@ public class VtkDemLoadUtil
 			featureTypeValueM.put(featureTypeL.get(c1), vValuesPerCellArr[c1]);
 		convertPointDataToCellData(smallBodyModel.getSmallBodyPolyData(), featureTypeValueM);
 		for (int c1 = 0; c1 < featureTypeL.size(); c1++)
-			vValuesPerCellArr[c1] = featureTypeValueM.get(featureTypeL.get(0));
+			vValuesPerCellArr[c1] = featureTypeValueM.get(featureTypeL.get(c1));
 
 		// Apply colors to the small body model
 		String[] nameArr = new String[featureTypeL.size()];
 		String[] unitArr = new String[featureTypeL.size()];
 		for (int c1 = 0; c1 < featureTypeL.size(); c1++)
 		{
-			FeatureType tmpItem = featureTypeL.get(0);
+			FeatureType tmpItem = featureTypeL.get(c1);
 			nameArr[c1] = tmpItem.getName();
 			unitArr[c1] = tmpItem.getUnit();
 		}
