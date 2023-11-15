@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
   <artifactId>sbmt-dem</artifactId>
-  <version>1.0.3-b2-SNAPSHOT</version>
+  <version>1.0.4-b3-SNAPSHOT</version>
   <name>sbmt-dem</name>
   <description>DEM library for SBMT</description>
   <packaging>jar</packaging>

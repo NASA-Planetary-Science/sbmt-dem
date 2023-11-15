@@ -348,10 +348,15 @@ public class VtkDemLoadUtil
 		if (processedUnits != null)
 			processedUnits = processedUnits.trim();
 		if (processedUnits.isEmpty() == true)
-			processedUnits = "";
+			processedUnits = null;
 
 		float processedScale = 1.0f;
 
+		// Process here
+		if (processedUnits == null)
+		{
+			; // Nothing to do
+		}
 		if (processedName.equals("Elevation Relative to Gravity") == true && processedUnits.equals("kilometers") == true)
 		{
 			// From Mapmaker output
