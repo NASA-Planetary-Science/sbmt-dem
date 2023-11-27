@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.dem.gui.table;
 
 import java.awt.Color;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
@@ -33,11 +32,11 @@ public class ProfileItemHandler<G1 extends PolyLine> extends BasicItemHandler<G1
 	@Override
 	public Object getColumnValue(G1 aItem, LookUp aEnum)
 	{
-		List<LatLon> controlPointL = aItem.getControlPoints();
-		LatLon begLL = new LatLon(Double.NaN, Double.NaN);
+		var controlPointL = aItem.getControlPoints();
+		var begLL = new LatLon(Double.NaN, Double.NaN);
 		if (controlPointL.size() > 0)
 			begLL = controlPointL.get(0);
-		LatLon endLL = begLL;
+		var endLL = begLL;
 		if (controlPointL.size() > 1)
 			endLL = controlPointL.get(1);
 
@@ -70,7 +69,7 @@ public class ProfileItemHandler<G1 extends PolyLine> extends BasicItemHandler<G1
 //				return aItem.getLabel();
 
 			case Length:
-				return ((PolyLine) aItem).getPathLength();
+				return aItem.getRenderState().pathLength();
 
 			default:
 				break;
@@ -82,7 +81,7 @@ public class ProfileItemHandler<G1 extends PolyLine> extends BasicItemHandler<G1
 	@Override
 	public void setColumnValue(G1 aItem, LookUp aEnum, Object aValue)
 	{
-		List<G1> itemL = ImmutableList.of(aItem);
+		var itemL = ImmutableList.of(aItem);
 		if (aEnum == LookUp.IsVisible)
 			refManager.setIsVisible(itemL, (boolean) aValue);
 		else if (aEnum == LookUp.Color)

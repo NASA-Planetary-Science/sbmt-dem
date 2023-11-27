@@ -348,7 +348,7 @@ public class ProfileTablePanel extends JPanel
 		int cntShowItems = 0;
 		for (PolyLine aItem : pickS)
 		{
-			if (refItemManager.getIsVisible(aItem) == true)
+			if (aItem.getVisible() == true)
 				cntShowItems++;
 		}
 
