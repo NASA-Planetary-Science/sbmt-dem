@@ -6,6 +6,13 @@
   <name>sbmt-dem</name>
   <description>DEM library for SBMT</description>
   <packaging>jar</packaging>
+  
+  <parent>
+    <groupId>edu.jhuapl.ses.sbmt</groupId>
+    <artifactId>sbmt-overview</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  
   <organization>
 	<name>Johns Hopkins University Applied Physics Lab</name>
 	<url>https://www.jhuapl.edu</url>
@@ -30,7 +37,7 @@
 	<dependency>
 		<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 		<artifactId>sbmt-util</artifactId>
-		<version>1.0.10</version>
+<!--		<version>1.0.10</version>-->
 	</dependency>
   </dependencies>
   <build>
