@@ -13,10 +13,8 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   
-  <organization>
-	<name>Johns Hopkins University Applied Physics Lab</name>
-	<url>https://www.jhuapl.edu</url>
-  </organization>
+  <url>https://github.com/NASA-Planetary-Science/sbmt-dem</url>
+  
   <distributionManagement>
   	<repository>
 		<id>central</id>
@@ -29,40 +27,12 @@
 		<url>http://surfshop.jhuapl.edu:8081/artifactory/libs-snapshot-local</url>
 	</snapshotRepository>
   </distributionManagement>
-  <properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
+
   <dependencies>
 	<dependency>
 		<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 		<artifactId>sbmt-util</artifactId>
-<!--		<version>1.0.10</version>-->
 	</dependency>
   </dependencies>
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <release>16</release>
-        </configuration>
-      </plugin>
-      <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-source-plugin</artifactId>
-		<version>3.2.1</version>
-		<executions>
-			<execution>
-				<id>attach-sources</id>
-				<goals>
-					<goal>jar</goal>
-				</goals>
-			</execution>
-		</executions>
-	  </plugin>
-    </plugins>
-  </build>
+
 </project>
